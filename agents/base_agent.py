@@ -10,7 +10,7 @@ from semantic_kernel.agents import ChatCompletionAgent
 from semantic_kernel.contents import ChatHistory, ChatMessageContent, AuthorRole
 
 from api.models import AgentLog, AgentStatus
-from services.ai_service import create_kernel, SERVICE_ID
+from services.ai_service import create_kernel
 from services.db_service import save_agent_memory
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,6 @@ class BaseAgent(ABC):
         # Create the SK ChatCompletionAgent
         self._sk_agent = ChatCompletionAgent(
             kernel=self._kernel,
-            service_id=SERVICE_ID,
             name=self.name.replace(" ", "_").replace("&", "and"),
             description=self.description,
             instructions=self.instructions,
@@ -117,10 +116,6 @@ class BaseAgent(ABC):
             text = "\n".join(lines)
 
         return json.loads(text)
-
-    async def save_memory(self, data: dict) -> None:
-        """Persist agent memory/metadata to the database."""
-        await save_agent_memory(self.job_id, self.name, data)
 
     async def save_memory(self, data: dict) -> None:
         """Persist agent memory to Cosmos DB."""
