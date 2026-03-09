@@ -44,7 +44,9 @@ User uploads RFP (PDF/DOCX)
 
 | Layer | Technology |
 |-------|-----------|
-| Agent Framework | Custom multi-agent pipeline with Azure OpenAI |
+| Agent Framework | **Microsoft Semantic Kernel** (`ChatCompletionAgent`) |
+| AI Evaluation | **Azure AI Foundry** (relevance, coherence, groundedness scoring) |
+| AI Tracing | **Azure AI Foundry** + OpenTelemetry (pipeline & agent spans) |
 | AI Models | Azure OpenAI Service (GPT-4o) |
 | Backend | Python, FastAPI, WebSockets |
 | Document Processing | Azure Document Intelligence, PyPDF2 |
@@ -100,6 +102,8 @@ docker-compose up --build
 | POST | `/api/upload` | Upload RFP and start processing |
 | GET | `/api/status/{job_id}` | Check processing status |
 | GET | `/api/artifacts/{job_id}` | Get generated artifacts |
+| GET | `/api/evaluation/{job_id}` | Get Foundry evaluation report |
+| POST | `/api/evaluation/{job_id}/rerun` | Re-run Foundry evaluation |
 | WS | `/ws/{job_id}` | Real-time agent progress |
 | GET | `/health` | Health check |
 
@@ -143,7 +147,9 @@ rfp-product-engine/
 ├── orchestration/
 │   └── workflow.py            # Multi-agent pipeline orchestrator
 ├── services/                  # Azure service integrations
-│   ├── ai_service.py          # Azure OpenAI wrapper
+│   ├── ai_service.py          # Semantic Kernel factory
+│   ├── foundry_evaluation.py  # Azure AI Foundry evaluation
+│   ├── foundry_tracing.py     # Azure AI Foundry tracing
 │   ├── storage_service.py     # Blob Storage operations
 │   ├── db_service.py          # Cosmos DB operations
 │   └── document_processor.py  # PDF/DOCX text extraction
@@ -153,7 +159,8 @@ rfp-product-engine/
 │   ├── ws.py                  # WebSocket handler
 │   └── routes/
 │       ├── upload.py          # Upload endpoint
-│       └── artifacts.py       # Artifacts endpoint
+│       ├── artifacts.py       # Artifacts endpoint
+│       └── evaluation.py      # Foundry evaluation endpoint
 ├── infra/
 │   └── main.bicep             # Azure IaC template
 ├── tests/                     # Unit and integration tests
@@ -168,7 +175,8 @@ rfp-product-engine/
 ## Hackathon Prize Alignment
 
 - **Best Enterprise Solution** — Governance, security (Key Vault, encrypted storage), responsible AI validation
-- **Best Multi-Agent System** — 6-agent orchestrated pipeline with shared memory and progress tracking
+- **Best Multi-Agent System** — 6-agent Semantic Kernel pipeline with shared memory, Foundry tracing, and progress tracking
+- **Best Use of Microsoft Tools** — Semantic Kernel (agent framework) + Azure AI Foundry (evaluation & tracing) + Azure OpenAI
 - **Grand Prize AI Applications** — Production-ready architecture with CI/CD, monitoring, and IaC
 
 ## License

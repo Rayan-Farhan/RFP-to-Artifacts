@@ -4,7 +4,7 @@
 
 ### Overview
 
-The system uses a sequential multi-agent pipeline where each agent specializes in one transformation step. Agents communicate through a shared context dictionary, and each agent enriches it with its outputs.
+The system uses a sequential multi-agent pipeline built on **Microsoft Semantic Kernel** where each agent specializes in one transformation step. Agents communicate through a shared context dictionary, and each agent enriches it with its outputs. **Azure AI Foundry** provides evaluation scoring (relevance, coherence, groundedness) and full pipeline tracing via OpenTelemetry.
 
 ### Why Multi-Agent Over Single LLM Call?
 
@@ -94,8 +94,38 @@ The Governance Agent runs last because it validates everything.
 - **API**: CORS restricted, file type validation, size limits
 - **AI Safety**: Content filtering via Azure OpenAI, output validation via Governance Agent
 
+### Microsoft Agentic Framework Integration
+
+#### Semantic Kernel
+
+All agents extend a `BaseAgent` class that wraps Semantic Kernel's `ChatCompletionAgent`. A single shared `Kernel` instance with `AzureChatCompletion` service is created once and passed to all agents. This provides:
+
+- Standardized LLM interaction through SK's chat completion API
+- Built-in token management and prompt templating
+- Future extensibility via SK plugins and planners
+
+#### Azure AI Foundry — Evaluation
+
+After the pipeline completes, artifacts are scored using Foundry evaluators:
+
+- **RelevanceEvaluator** — How well the SOW/requirements match the RFP
+- **CoherenceEvaluator** — Logical consistency of the generated SOW
+- **GroundednessEvaluator** — Whether the SOW is grounded in the source RFP text
+
+When Foundry is not configured, an offline heuristic evaluator checks artifact completeness (counts, field coverage) as a fallback.
+
+#### Azure AI Foundry — Tracing
+
+Every pipeline run is instrumented with OpenTelemetry spans exported to the Foundry portal:
+
+- **Parent span**: `rfp_pipeline` — wraps the entire 6-agent run
+- **Child spans**: `agent.<name>` — one per agent with duration and token attributes
+
+Tracing is initialized at app startup (`init_tracing()`). When the connection string is not set, tracing falls back to local debug logging (no-op).
+
 ### Monitoring Strategy
 
+- **Azure AI Foundry Portal**: Full pipeline traces, agent-level spans, evaluation dashboards
 - **Application Insights**: Request latency, error rates, dependencies
 - **Custom Metrics**: Per-agent execution time, token usage, processing cost
 - **Agent Logs**: Stored in Cosmos DB for audit trail and debugging
