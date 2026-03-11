@@ -1,5 +1,6 @@
 import logging
-from azure.cosmos import CosmosClient, PartitionKey
+from azure.cosmos import CosmosClient
+from azure.cosmos.exceptions import CosmosResourceNotFoundError, CosmosHttpResponseError
 from config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -35,8 +36,11 @@ async def get_job(job_id: str) -> dict | None:
     container = _get_container("jobs")
     try:
         return container.read_item(item=job_id, partition_key=job_id)
-    except Exception:
+    except CosmosResourceNotFoundError:
         return None
+    except CosmosHttpResponseError as e:
+        logger.error("Cosmos DB error reading job %s: %s", job_id, e.status_code)
+        raise
 
 
 async def save_artifacts(job_id: str, artifacts: dict) -> None:
@@ -53,8 +57,11 @@ async def get_artifacts(job_id: str) -> dict | None:
     container = _get_container("artifacts")
     try:
         return container.read_item(item=job_id, partition_key=job_id)
-    except Exception:
+    except CosmosResourceNotFoundError:
         return None
+    except CosmosHttpResponseError as e:
+        logger.error("Cosmos DB error reading artifacts %s: %s", job_id, e.status_code)
+        raise
 
 
 async def save_agent_memory(job_id: str, agent_name: str, data: dict) -> None:
@@ -78,5 +85,8 @@ async def get_agent_memory(job_id: str, agent_name: str) -> dict | None:
             item=f"{job_id}_{agent_name}",
             partition_key=job_id,
         )
-    except Exception:
+    except CosmosResourceNotFoundError:
         return None
+    except CosmosHttpResponseError as e:
+        logger.error("Cosmos DB error reading memory %s/%s: %s", job_id, agent_name, e.status_code)
+        raise

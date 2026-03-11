@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import time
@@ -7,9 +8,10 @@ from typing import Any
 
 from semantic_kernel import Kernel
 from semantic_kernel.agents import ChatCompletionAgent
-from semantic_kernel.contents import ChatHistory, ChatMessageContent, AuthorRole
+from semantic_kernel.contents import ChatHistory
 
 from api.models import AgentLog, AgentStatus
+from config import get_settings
 from services.ai_service import create_kernel
 from services.db_service import save_agent_memory
 
@@ -103,16 +105,41 @@ class BaseAgent(ABC):
         logger.info("[%s] SK agent responded (%d chars)", self.name, len(response_content))
         return response_content
 
+    async def invoke_with_retry(self, user_message: str) -> str:
+        """
+        Invoke the SK agent with exponential backoff retry for transient failures.
+        """
+        settings = get_settings()
+        max_retries = settings.agent_max_retries
+        base_delay = settings.agent_retry_base_delay
+
+        last_exc: Exception | None = None
+        for attempt in range(max_retries):
+            try:
+                return await self.invoke(user_message)
+            except Exception as e:
+                last_exc = e
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt)
+                    logger.warning(
+                        "[%s] Attempt %d/%d failed, retrying in %.1fs: %s",
+                        self.name, attempt + 1, max_retries, delay, e,
+                    )
+                    await asyncio.sleep(delay)
+                else:
+                    logger.error("[%s] All %d attempts failed", self.name, max_retries)
+        raise last_exc  # type: ignore[misc]
+
     async def invoke_json(self, user_message: str) -> dict:
-        """Invoke the SK agent and parse the response as JSON."""
-        raw = await self.invoke(user_message)
+        """Invoke the SK agent (with retry) and parse the response as JSON."""
+        raw = await self.invoke_with_retry(user_message)
 
         # Strip markdown code fences if present
         text = raw.strip()
         if text.startswith("```"):
             lines = text.split("\n")
             # Remove first line (```json) and last line (```)
-            lines = [l for l in lines if not l.strip().startswith("```")]
+            lines = [ln for ln in lines if not ln.strip().startswith("```")]
             text = "\n".join(lines)
 
         return json.loads(text)

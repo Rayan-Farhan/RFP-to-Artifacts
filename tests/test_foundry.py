@@ -1,7 +1,7 @@
 """Tests for Azure AI Foundry integration (evaluation + tracing)."""
 
 import pytest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, MagicMock
 
 from services.foundry_evaluation import evaluate_artifacts, _offline_evaluation
 from services.foundry_tracing import init_tracing, trace_agent, trace_pipeline

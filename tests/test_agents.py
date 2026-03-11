@@ -1,6 +1,5 @@
 import pytest
-import json
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 from agents.parser_agent import ParserAgent
 from agents.requirements_agent import RequirementsAgent

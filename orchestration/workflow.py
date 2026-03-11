@@ -1,10 +1,11 @@
+import asyncio
 import logging
 from datetime import datetime
 from typing import Any, Callable
 
 from semantic_kernel import Kernel
 
-from api.models import AgentLog, AgentStatus, JobStatus, RFPJob
+from api.models import AgentLog, AgentStatus, JobStatus
 from agents.base_agent import BaseAgent
 from agents.parser_agent import ParserAgent
 from agents.requirements_agent import RequirementsAgent
@@ -29,7 +30,10 @@ class Workflow:
     using Microsoft Semantic Kernel.
 
     Pipeline:
-      RFP Text → Parser → Requirements → Feature Planning → Persona/Research → SOW → Governance
+      RFP Text → Parser → Requirements → [Feature Planning ‖ Persona/Research] → SOW → Governance
+
+    Feature Planning and Persona/Research agents run in parallel after
+    Requirements completes, since they are independent of each other.
 
     All agents share a single Semantic Kernel instance with the
     Azure OpenAI chat completion service.
@@ -42,15 +46,42 @@ class Workflow:
         # Single shared Semantic Kernel instance for all agents
         self._kernel: Kernel = create_kernel()
 
-        # Define the agent pipeline in execution order
-        self.pipeline: list[BaseAgent] = [
-            ParserAgent(job_id, kernel=self._kernel),
-            RequirementsAgent(job_id, kernel=self._kernel),
-            FeaturePlanningAgent(job_id, kernel=self._kernel),
-            PersonaResearchAgent(job_id, kernel=self._kernel),
-            SOWAgent(job_id, kernel=self._kernel),
-            GovernanceAgent(job_id, kernel=self._kernel),
+        # Sequential stages (each stage is a list of agents to run concurrently)
+        self._stages: list[list[BaseAgent]] = [
+            [ParserAgent(job_id, kernel=self._kernel)],
+            [RequirementsAgent(job_id, kernel=self._kernel)],
+            # Feature Planning and Persona/Research run in parallel
+            [
+                FeaturePlanningAgent(job_id, kernel=self._kernel),
+                PersonaResearchAgent(job_id, kernel=self._kernel),
+            ],
+            [SOWAgent(job_id, kernel=self._kernel)],
+            [GovernanceAgent(job_id, kernel=self._kernel)],
         ]
+
+    async def _run_agent(
+        self,
+        agent: BaseAgent,
+        context: dict[str, Any],
+    ) -> tuple[dict[str, Any], AgentLog]:
+        """Run a single agent with tracing and progress notifications."""
+        running_log = AgentLog(
+            agent_name=agent.name,
+            status=AgentStatus.RUNNING,
+            message=f"{agent.name} is processing...",
+        )
+        if self.on_progress:
+            await self.on_progress(self.job_id, running_log)
+
+        with trace_agent(agent.name, self.job_id) as span_data:
+            result_context, log = await agent.run(context)
+            span_data["duration_seconds"] = log.duration_seconds
+            span_data["tokens_used"] = log.tokens_used
+
+        if self.on_progress:
+            await self.on_progress(self.job_id, log)
+
+        return result_context, log
 
     async def run(self, raw_text: str) -> dict[str, Any]:
         """
@@ -74,32 +105,31 @@ class Workflow:
 
         # Wrap the entire pipeline in an Azure AI Foundry trace span
         with trace_pipeline(self.job_id):
-            for agent in self.pipeline:
-                # Notify progress
-                running_log = AgentLog(
-                    agent_name=agent.name,
-                    status=AgentStatus.RUNNING,
-                    message=f"{agent.name} is processing...",
-                )
-                if self.on_progress:
-                    await self.on_progress(self.job_id, running_log)
-
+            for stage in self._stages:
                 try:
-                    # Wrap each agent execution in a Foundry trace span
-                    with trace_agent(agent.name, self.job_id) as span_data:
-                        context, log = await agent.run(context)
-                        span_data["duration_seconds"] = log.duration_seconds
-                        span_data["tokens_used"] = log.tokens_used
-
-                    agent_logs.append(log)
-
-                    # Notify completion of this agent
-                    if self.on_progress:
-                        await self.on_progress(self.job_id, log)
+                    if len(stage) == 1:
+                        # Single agent — run directly
+                        context, log = await self._run_agent(stage[0], context)
+                        agent_logs.append(log)
+                    else:
+                        # Multiple agents — run in parallel, merge contexts
+                        tasks = [
+                            self._run_agent(agent, dict(context))
+                            for agent in stage
+                        ]
+                        results = await asyncio.gather(*tasks)
+                        for result_context, log in results:
+                            # Merge each agent's outputs into the shared context
+                            for key, value in result_context.items():
+                                if key not in context or context[key] != value:
+                                    context[key] = value
+                            agent_logs.append(log)
 
                 except Exception as e:
+                    # Determine which agent failed
+                    failed_agent = stage[0] if len(stage) == 1 else stage[0]
                     fail_log = AgentLog(
-                        agent_name=agent.name,
+                        agent_name=failed_agent.name,
                         status=AgentStatus.FAILED,
                         message=str(e),
                     )
@@ -112,7 +142,7 @@ class Workflow:
                         "job_id": self.job_id,
                         "status": JobStatus.FAILED.value,
                         "error": str(e),
-                        "agent_logs": [l.model_dump(mode="json") for l in agent_logs],
+                        "agent_logs": [log_entry.model_dump(mode="json") for log_entry in agent_logs],
                         "updated_at": datetime.utcnow().isoformat(),
                     })
                     raise
@@ -138,7 +168,7 @@ class Workflow:
         await db_service.save_job({
             "job_id": self.job_id,
             "status": JobStatus.COMPLETED.value,
-            "agent_logs": [l.model_dump(mode="json") for l in agent_logs],
+            "agent_logs": [log_entry.model_dump(mode="json") for log_entry in agent_logs],
             "updated_at": datetime.utcnow().isoformat(),
         })
 

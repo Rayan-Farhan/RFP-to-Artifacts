@@ -1,6 +1,7 @@
 from typing import Any
 from semantic_kernel import Kernel
 from agents.base_agent import BaseAgent
+from config import get_settings
 
 INSTRUCTIONS = """You are an expert RFP (Request for Proposal) document analyst.
 Your job is to parse a raw RFP document and extract its key sections into a structured format.
@@ -52,8 +53,16 @@ class ParserAgent(BaseAgent):
         if not raw_text:
             raise ValueError("No raw_text provided in context")
 
-        # Truncate to ~100k chars to stay within token limits
-        text_for_llm = raw_text[:100_000]
+        # Truncate to configurable limit to stay within token limits
+        settings = get_settings()
+        max_chars = settings.max_text_chars
+        if len(raw_text) > max_chars:
+            import logging
+            logging.getLogger(__name__).warning(
+                "RFP text truncated from %d to %d chars (configure MAX_TEXT_CHARS to increase)",
+                len(raw_text), max_chars,
+            )
+        text_for_llm = raw_text[:max_chars]
 
         result = await self.invoke_json(
             f"Parse the following RFP document:\n\n{text_for_llm}"

@@ -4,9 +4,6 @@ from config import get_settings
 
 logger = logging.getLogger(__name__)
 
-RFP_CONTAINER = "rfp-uploads"
-ARTIFACTS_CONTAINER = "generated-artifacts"
-
 
 def get_blob_service_client() -> BlobServiceClient:
     settings = get_settings()
@@ -15,8 +12,9 @@ def get_blob_service_client() -> BlobServiceClient:
 
 async def upload_rfp(filename: str, data: bytes, content_type: str) -> str:
     """Upload an RFP file to Azure Blob Storage. Returns the blob URL."""
+    settings = get_settings()
     client = get_blob_service_client()
-    container = client.get_container_client(RFP_CONTAINER)
+    container = client.get_container_client(settings.blob_rfp_container)
 
     blob = container.get_blob_client(filename)
     blob.upload_blob(
@@ -30,8 +28,9 @@ async def upload_rfp(filename: str, data: bytes, content_type: str) -> str:
 
 async def upload_artifact(job_id: str, filename: str, data: bytes, content_type: str = "application/json") -> str:
     """Upload a generated artifact to Blob Storage."""
+    settings = get_settings()
     client = get_blob_service_client()
-    container = client.get_container_client(ARTIFACTS_CONTAINER)
+    container = client.get_container_client(settings.blob_artifacts_container)
 
     blob_name = f"{job_id}/{filename}"
     blob = container.get_blob_client(blob_name)
@@ -46,7 +45,8 @@ async def upload_artifact(job_id: str, filename: str, data: bytes, content_type:
 
 async def download_rfp(filename: str) -> bytes:
     """Download an RFP file from Blob Storage."""
+    settings = get_settings()
     client = get_blob_service_client()
-    container = client.get_container_client(RFP_CONTAINER)
+    container = client.get_container_client(settings.blob_rfp_container)
     blob = container.get_blob_client(filename)
     return blob.download_blob().readall()

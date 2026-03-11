@@ -66,14 +66,19 @@ context = {
 
 ### Why Sequential (Not Parallel)?
 
-Each agent depends on the previous agent's output:
+Most agents depend on the previous agent's output:
 - Requirements Agent needs parsed sections from Parser Agent
 - Feature Agent needs requirements to build features
 - SOW Agent needs all previous artifacts
 
 The Governance Agent runs last because it validates everything.
 
-**Future enhancement**: Persona Agent and Feature Planning Agent could run in parallel since they both depend on Requirements but not on each other.
+**Parallel execution**: Feature Planning Agent and Persona & Research Agent run concurrently since they both depend on Requirements but not on each other. This reduces overall pipeline latency.
+
+```
+Parser → Requirements → ┬─ Feature Planning ─┬→ SOW → Governance
+                         └─ Persona/Research ─┘
+```
 
 ### Azure Service Decisions
 

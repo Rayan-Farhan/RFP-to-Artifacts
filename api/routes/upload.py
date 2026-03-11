@@ -1,5 +1,4 @@
 import uuid
-import asyncio
 import logging
 from datetime import datetime
 
