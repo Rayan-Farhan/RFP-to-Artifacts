@@ -1,7 +1,10 @@
+import logging
 from typing import Any
 from semantic_kernel import Kernel
 from agents.base_agent import BaseAgent
 from config import get_settings
+
+logger = logging.getLogger(__name__)
 
 INSTRUCTIONS = """You are an expert RFP (Request for Proposal) document analyst.
 Your job is to parse a raw RFP document and extract its key sections into a structured format.
@@ -57,8 +60,7 @@ class ParserAgent(BaseAgent):
         settings = get_settings()
         max_chars = settings.max_text_chars
         if len(raw_text) > max_chars:
-            import logging
-            logging.getLogger(__name__).warning(
+            logger.warning(
                 "RFP text truncated from %d to %d chars (configure MAX_TEXT_CHARS to increase)",
                 len(raw_text), max_chars,
             )

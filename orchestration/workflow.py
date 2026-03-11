@@ -126,10 +126,10 @@ class Workflow:
                             agent_logs.append(log)
 
                 except Exception as e:
-                    # Determine which agent failed
-                    failed_agent = stage[0] if len(stage) == 1 else stage[0]
+                    # Report which stage failed
+                    stage_names = ", ".join(a.name for a in stage)
                     fail_log = AgentLog(
-                        agent_name=failed_agent.name,
+                        agent_name=stage_names,
                         status=AgentStatus.FAILED,
                         message=str(e),
                     )
