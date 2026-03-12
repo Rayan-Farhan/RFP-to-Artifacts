@@ -8,7 +8,6 @@ from services.foundry_tracing import init_tracing, trace_agent, trace_pipeline
 
 
 # ── Offline Evaluation Tests ──
-
 def test_offline_evaluation_complete_artifacts():
     """Offline evaluation should score complete artifacts highly."""
     artifacts = {
@@ -26,14 +25,33 @@ def test_offline_evaluation_complete_artifacts():
             "constraints": ["C1"],
             "acceptance_criteria": ["AC1"],
         },
+        # New artifacts
+        "problem_statement": {
+            "problem_title": "Test Problem",
+            "problem_statement": "Description",
+            "current_state": "Current",
+            "desired_state": "Desired",
+            "gap_analysis": "Gap",
+            "business_impact": "Impact",
+        },
+        "market_research": {
+            "market_trends": [{"trend": "T1"}, {"trend": "T2"}],
+            "competitive_landscape": [{"category": "C1"}],
+            "strategic_recommendations": ["R1"],
+        },
+        "success_metrics": {
+            "success_metrics": [{"id": "KPI-1"}, {"id": "KPI-2"}, {"id": "KPI-3"}],
+        },
+        "roadmap": {
+            "phases": [{"phase_id": "P1"}, {"phase_id": "P2"}, {"phase_id": "P3"}],
+        },
     }
     result = _offline_evaluation(artifacts)
 
     assert result["evaluation_source"] == "offline_heuristic"
     assert result["overall_score"] > 7.0
-    assert len(result["checks"]) == 5
+    assert len(result["checks"]) == 9  # Updated: 5 original + 4 new
     assert "summary" in result
-
 
 def test_offline_evaluation_empty_artifacts():
     """Offline evaluation should score empty artifacts low."""

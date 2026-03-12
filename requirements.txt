@@ -10,7 +10,7 @@ azure-storage-blob==12.24.0
 azure-identity==1.19.0
 azure-keyvault-secrets==4.9.0
 azure-monitor-opentelemetry==1.6.4
-openai==1.58.1
+openai>=1.61,<2
 
 # Microsoft Agent Framework (Semantic Kernel)
 semantic-kernel[azure]==1.21.1
@@ -25,7 +25,7 @@ python-docx==1.1.2
 PyPDF2==3.0.1
 
 # Utilities
-pydantic==2.10.3
+pydantic>=2.0,<2.11
 pydantic-settings==2.7.0
 python-dotenv==1.0.1
 httpx==0.28.1

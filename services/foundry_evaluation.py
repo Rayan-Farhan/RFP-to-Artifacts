@@ -114,7 +114,6 @@ async def evaluate_artifacts(job_id: str, artifacts: dict[str, Any]) -> dict[str
         logger.error("Foundry evaluation failed, falling back to offline: %s", e, exc_info=True)
         return _offline_evaluation(artifacts)
 
-
 def _offline_evaluation(artifacts: dict[str, Any]) -> dict[str, Any]:
     """
     Simple heuristic-based evaluation when Foundry is unavailable.
@@ -176,6 +175,55 @@ def _offline_evaluation(artifacts: dict[str, Any]) -> dict[str, Any]:
         "max_score": 10.0,
     })
 
+    # ── NEW: Problem statement completeness ──
+    problem = artifacts.get("problem_statement", {})
+    problem_fields = ["problem_title", "problem_statement", "current_state",
+                      "desired_state", "gap_analysis", "business_impact"]
+    ps_filled = sum(1 for f in problem_fields if problem.get(f))
+    ps_score = (ps_filled / len(problem_fields)) * 10 if problem else 0
+    checks.append({
+        "metric": "problem_statement_completeness",
+        "value": f"{ps_filled}/{len(problem_fields)} sections",
+        "score": round(ps_score, 1),
+        "max_score": 10.0,
+    })
+
+    # ── NEW: Market research depth ──
+    market = artifacts.get("market_research", {})
+    market_score = min(10.0, (
+        len(market.get("market_trends", [])) * 2.0 +
+        len(market.get("competitive_landscape", [])) * 2.0 +
+        len(market.get("strategic_recommendations", [])) * 1.0
+    )) if market else 0
+    checks.append({
+        "metric": "market_research_depth",
+        "value": len(market.get("market_trends", [])),
+        "score": round(market_score, 1),
+        "max_score": 10.0,
+    })
+
+    # ── NEW: Success metrics / KPIs ──
+    kpis = artifacts.get("success_metrics", {})
+    kpi_list = kpis.get("success_metrics", [])
+    kpi_score = min(10.0, len(kpi_list) * 2.0) if kpis else 0
+    checks.append({
+        "metric": "kpi_count",
+        "value": len(kpi_list),
+        "score": round(kpi_score, 1),
+        "max_score": 10.0,
+    })
+
+    # ── NEW: Roadmap completeness ──
+    roadmap = artifacts.get("roadmap", {})
+    roadmap_phases = roadmap.get("phases", [])
+    roadmap_score = min(10.0, len(roadmap_phases) * 2.5) if roadmap else 0
+    checks.append({
+        "metric": "roadmap_phases",
+        "value": len(roadmap_phases),
+        "score": round(roadmap_score, 1),
+        "max_score": 10.0,
+    })
+
     total = sum(c["score"] for c in checks)
     max_total = sum(c["max_score"] for c in checks)
     overall = round((total / max_total) * 10, 1) if max_total > 0 else 0
@@ -214,3 +262,52 @@ def _summarize_scores(results: dict) -> str:
         parts.append(f"Requirements relevance={req_eval.get('relevance', 'N/A')} (n={req_eval.get('count', 0)})")
 
     return "; ".join(parts) if parts else "No evaluations completed"
+
+    # Problem statement completeness
+    problem = artifacts.get("problem_statement", {})
+    problem_fields = ["problem_title", "problem_statement", "current_state",
+                      "desired_state", "gap_analysis", "business_impact"]
+    ps_filled = sum(1 for f in problem_fields if problem.get(f))
+    ps_score = (ps_filled / len(problem_fields)) * 10 if problem else 0
+    checks.append({
+        "metric": "problem_statement_completeness",
+        "value": f"{ps_filled}/{len(problem_fields)} sections",
+        "score": round(ps_score, 1),
+        "max_score": 10.0,
+    })
+
+    # Market research completeness
+    market = artifacts.get("market_research", {})
+    market_score = min(10.0, (
+        len(market.get("market_trends", [])) * 2.0 +
+        len(market.get("competitive_landscape", [])) * 2.0 +
+        len(market.get("strategic_recommendations", [])) * 1.0
+    )) if market else 0
+    checks.append({
+        "metric": "market_research_depth",
+        "value": len(market.get("market_trends", [])),
+        "score": round(market_score, 1),
+        "max_score": 10.0,
+    })
+
+    # Success metrics / KPIs
+    kpis = artifacts.get("success_metrics", {})
+    kpi_list = kpis.get("success_metrics", [])
+    kpi_score = min(10.0, len(kpi_list) * 2.0) if kpis else 0
+    checks.append({
+        "metric": "kpi_count",
+        "value": len(kpi_list),
+        "score": round(kpi_score, 1),
+        "max_score": 10.0,
+    })
+
+    # Roadmap completeness
+    roadmap = artifacts.get("roadmap", {})
+    roadmap_phases = roadmap.get("phases", [])
+    roadmap_score = min(10.0, len(roadmap_phases) * 2.5) if roadmap else 0
+    checks.append({
+        "metric": "roadmap_phases",
+        "value": len(roadmap_phases),
+        "score": round(roadmap_score, 1),
+        "max_score": 10.0,
+    })
