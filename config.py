@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     agent_max_retries: int = 3
     agent_retry_base_delay: float = 1.0
 
+    # Find the Settings class and add these two fields:
+    doc_intelligence_endpoint: str = ""
+    doc_intelligence_key: str = ""
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 
