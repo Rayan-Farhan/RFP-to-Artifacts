@@ -50,3 +50,12 @@ async def download_rfp(filename: str) -> bytes:
     container = client.get_container_client(RFP_CONTAINER)
     blob = container.get_blob_client(filename)
     return blob.download_blob().readall()
+
+
+async def download_artifact_file(job_id: str, filename: str) -> bytes:
+    """Download a generated artifact file from Blob Storage."""
+    client = get_blob_service_client()
+    container = client.get_container_client(ARTIFACTS_CONTAINER)
+    blob_name = f"{job_id}/{filename}"
+    blob = container.get_blob_client(blob_name)
+    return blob.download_blob().readall()
