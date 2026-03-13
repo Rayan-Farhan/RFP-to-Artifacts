@@ -51,12 +51,17 @@ async def get_job_artifacts(job_id: str):
         "status": "completed",
         "artifacts": {
             "parsed_rfp": artifacts.get("parsed_rfp"),
+            "problem_statement": artifacts.get("problem_statement"),
+            "market_research": artifacts.get("market_research"),
             "requirements": artifacts.get("requirements", []),
             "features": artifacts.get("features", []),
+            "success_metrics": artifacts.get("success_metrics"),
+            "roadmap": artifacts.get("roadmap"),
             "personas": artifacts.get("personas", []),
             "interview_questions": artifacts.get("interview_questions", []),
             "sow": artifacts.get("sow"),
             "governance_report": artifacts.get("governance_report"),
             "foundry_evaluation": artifacts.get("foundry_evaluation"),
         },
+        "download_urls": artifacts.get("download_urls", {}),
     }
