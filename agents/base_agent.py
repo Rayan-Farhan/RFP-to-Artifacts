@@ -3,6 +3,7 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from semantic_kernel import Kernel
@@ -14,6 +15,81 @@ from services.ai_service import create_kernel
 from services.db_service import save_agent_memory
 
 logger = logging.getLogger(__name__)
+
+_PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
+
+
+def load_prompt(agent_slug: str) -> str:
+    """Load an agent system prompt from the prompts/ directory."""
+    return (_PROMPTS_DIR / f"{agent_slug}.txt").read_text(encoding="utf-8")
+
+
+def _escape_control_chars_in_json_strings(text: str) -> str:
+    """
+    Escape raw control characters that appear inside JSON strings.
+
+    LLM output sometimes includes literal newlines/tabs or other control chars
+    inside quoted strings, which makes strict JSON parsing fail.
+    """
+    out: list[str] = []
+    in_string = False
+    escaped = False
+
+    for ch in text:
+        if in_string:
+            if escaped:
+                out.append(ch)
+                escaped = False
+                continue
+
+            if ch == "\\":
+                out.append(ch)
+                escaped = True
+                continue
+
+            if ch == '"':
+                out.append(ch)
+                in_string = False
+                continue
+
+            if ord(ch) < 0x20:
+                if ch == "\n":
+                    out.append("\\n")
+                elif ch == "\r":
+                    out.append("\\r")
+                elif ch == "\t":
+                    out.append("\\t")
+                else:
+                    out.append(f"\\u{ord(ch):04x}")
+                continue
+
+            out.append(ch)
+            continue
+
+        out.append(ch)
+        if ch == '"':
+            in_string = True
+
+    return "".join(out)
+
+
+def _extract_outer_json_object(text: str) -> str:
+    """Trim leading/trailing prose and return text between first '{' and last '}'."""
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        return text
+    return text[start : end + 1]
+
+
+def _remove_trailing_commas(text: str) -> str:
+    """Best-effort cleanup for trailing commas before ] or }."""
+    prev = None
+    curr = text
+    while prev != curr:
+        prev = curr
+        curr = curr.replace(",\n}", "\n}").replace(",\n]", "\n]").replace(",}", "}").replace(",]", "]")
+    return curr
 
 
 class BaseAgent(ABC):
@@ -115,7 +191,26 @@ class BaseAgent(ABC):
             lines = [l for l in lines if not l.strip().startswith("```")]
             text = "\n".join(lines)
 
-        return json.loads(text)
+        text = _extract_outer_json_object(text.strip())
+
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            pass
+
+        # Repair common LLM JSON issues and retry.
+        repaired = _escape_control_chars_in_json_strings(text)
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError:
+            pass
+
+        repaired = _remove_trailing_commas(repaired)
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError as e:
+            logger.error("[%s] Failed to parse JSON response. Snippet: %s", self.name, repaired[:600])
+            raise ValueError(f"{self.name} returned invalid JSON: {e}") from e
 
     async def save_memory(self, data: dict) -> None:
         """Persist agent memory to Cosmos DB."""

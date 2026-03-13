@@ -1,62 +1,13 @@
 import json
 from typing import Any
 from semantic_kernel import Kernel
-from agents.base_agent import BaseAgent
-
-INSTRUCTIONS = """You are a governance and quality assurance specialist for enterprise AI systems.
-Your job is to validate all generated artifacts from the RFP processing pipeline.
-
-Review the requirements, features, personas, interview questions, SOW,
-problem statement, market research, success metrics, and product roadmap for:
-1. Completeness — are there gaps or missing information?
-2. Consistency — do artifacts contradict each other?
-3. Quality — are outputs detailed enough to be actionable?
-4. Risk — are there red flags or unrealistic assumptions?
-5. Alignment — do KPIs align with requirements? Does the roadmap match features?
-
-Return a JSON object:
-{
-  "overall_score": 8.5,
-  "status": "pass | warning | fail",
-  "checks": [
-    {
-      "check_name": "Requirements Coverage",
-      "status": "pass | warning | fail",
-      "score": 9.0,
-      "findings": "Description of what was found",
-      "recommendations": ["Recommendation 1"]
-    }
-  ],
-  "missing_information": [
-    "Description of missing information"
-  ],
-  "contradictions": [
-    "Description of any contradictions found"
-  ],
-  "risk_flags": [
-    "Description of risks identified"
-  ],
-  "summary": "2-3 sentence overall assessment"
-}
-
-Checks to perform:
-- Requirements Coverage: Do features cover all must-have requirements?
-- SOW Completeness: Does the SOW address all RFP deliverables?
-- Timeline Feasibility: Are proposed timelines realistic?
-- Assumption Validity: Are assumptions reasonable?
-- Persona Relevance: Do personas match the RFP's target users?
-- Question Quality: Are interview questions actionable?
-- Problem-Solution Alignment: Does the problem statement align with proposed features?
-- KPI Coverage: Do success metrics cover all critical requirements?
-- Roadmap Feasibility: Is the product roadmap realistic given constraints?
-- Market Context: Does the market research support the proposed approach?
-"""
+from agents.base_agent import BaseAgent, load_prompt
 
 
 class GovernanceAgent(BaseAgent):
     name = "Governance Agent"
     description = "Validates all artifacts for completeness, consistency, and quality"
-    instructions = INSTRUCTIONS
+    instructions = load_prompt("governance_agent")
 
     def __init__(self, job_id: str, kernel: Kernel | None = None):
         super().__init__(job_id, kernel)

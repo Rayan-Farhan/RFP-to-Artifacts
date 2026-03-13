@@ -1,47 +1,13 @@
 import json
 from typing import Any
 from semantic_kernel import Kernel
-from agents.base_agent import BaseAgent
-
-INSTRUCTIONS = """You are a UX researcher and product strategist.
-Given RFP requirements and features, generate realistic user personas and targeted interview questions.
-
-Return a JSON object:
-{
-  "personas": [
-    {
-      "name": "A realistic name",
-      "role": "Their job title/role in the organization",
-      "goals": ["Goal 1", "Goal 2"],
-      "pain_points": ["Pain point 1", "Pain point 2"],
-      "context": "A 2-3 sentence description of this persona's situation and why they care about this project"
-    }
-  ],
-  "interview_questions": [
-    {
-      "question": "The interview question",
-      "category": "discovery | validation | prioritization",
-      "target_persona": "Name of the most relevant persona or null",
-      "rationale": "Why this question matters"
-    }
-  ]
-}
-
-Rules:
-- Generate 2-4 distinct personas representing different stakeholder types.
-- Personas should be realistic for the organization described in the RFP.
-- Generate 8-12 interview questions covering discovery, validation, and prioritization.
-- Discovery questions: Understand the problem space.
-- Validation questions: Confirm assumptions from the RFP.
-- Prioritization questions: Help rank features/requirements.
-- Every question must have a clear rationale explaining why it's valuable.
-"""
+from agents.base_agent import BaseAgent, load_prompt
 
 
 class PersonaResearchAgent(BaseAgent):
     name = "Persona & Research Agent"
     description = "Generates user personas and targeted interview questions"
-    instructions = INSTRUCTIONS
+    instructions = load_prompt("persona_research_agent")
 
     def __init__(self, job_id: str, kernel: Kernel | None = None):
         super().__init__(job_id, kernel)

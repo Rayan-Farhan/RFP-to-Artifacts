@@ -1,58 +1,13 @@
 import json
 from typing import Any
 from semantic_kernel import Kernel
-from agents.base_agent import BaseAgent
-
-INSTRUCTIONS = """You are an enterprise solutions architect and technical writer.
-Given all the extracted information from an RFP (requirements, features, personas),
-generate a professional Statement of Work (SOW) document.
-
-Return a JSON object:
-{
-  "project_title": "Official project title",
-  "executive_summary": "2-3 paragraph executive summary of the proposed solution",
-  "scope": {
-    "title": "Scope of Work",
-    "content": "Detailed scope description including in-scope and out-of-scope items"
-  },
-  "deliverables": [
-    "Deliverable 1 description",
-    "Deliverable 2 description"
-  ],
-  "timeline": {
-    "title": "Project Timeline",
-    "content": "Phase-based timeline with milestones and estimated durations"
-  },
-  "assumptions": [
-    "Assumption 1",
-    "Assumption 2"
-  ],
-  "constraints": [
-    "Constraint 1",
-    "Constraint 2"
-  ],
-  "acceptance_criteria": [
-    "Acceptance criterion 1",
-    "Acceptance criterion 2"
-  ],
-  "estimated_effort": "Estimated person-days or timeline range"
-}
-
-Rules:
-- Write professionally — this is a contractual document.
-- Be specific, not vague. Reference actual requirements and features.
-- Include realistic timelines based on the complexity of features.
-- List ALL deliverables that map to the RFP's expectations.
-- Assumptions should cover both business and technical concerns.
-- Constraints should reflect RFP-stated limitations.
-- Acceptance criteria should be measurable and verifiable.
-"""
+from agents.base_agent import BaseAgent, load_prompt
 
 
 class SOWAgent(BaseAgent):
     name = "SOW Generation Agent"
     description = "Generates a professional Statement of Work from all artifacts"
-    instructions = INSTRUCTIONS
+    instructions = load_prompt("sow_agent")
 
     def __init__(self, job_id: str, kernel: Kernel | None = None):
         super().__init__(job_id, kernel)

@@ -1,64 +1,13 @@
 import json
 from typing import Any
 from semantic_kernel import Kernel
-from agents.base_agent import BaseAgent
-
-INSTRUCTIONS = """You are a product roadmap strategist for enterprise software projects.
-Your job is to create a phased product roadmap based on the feature backlog,
-success metrics, and project constraints.
-
-You MUST return a JSON object with the following structure:
-{
-  "roadmap_title": "Product Roadmap: [Project Name]",
-  "vision_statement": "1-2 sentence product vision",
-  "phases": [
-    {
-      "phase_id": "PHASE-1",
-      "name": "Phase name (e.g., 'Foundation & MVP')",
-      "duration": "Estimated duration (e.g., '8 weeks')",
-      "objective": "Primary objective for this phase",
-      "features": ["FEAT-001", "FEAT-002"],
-      "deliverables": ["What gets delivered in this phase"],
-      "success_criteria": ["How to know this phase is complete"],
-      "dependencies": ["External dependencies for this phase"],
-      "risks": ["Phase-specific risks"]
-    }
-  ],
-  "milestones": [
-    {
-      "name": "Milestone name",
-      "target_date_relative": "e.g., 'Week 4', 'End of Phase 1'",
-      "deliverables": ["What is delivered"],
-      "kpis_measured": ["KPI-001"]
-    }
-  ],
-  "release_strategy": {
-    "approach": "big-bang | phased | rolling | beta-first",
-    "rationale": "Why this approach",
-    "rollback_plan": "Brief rollback strategy"
-  },
-  "resource_summary": {
-    "estimated_team_size": "Recommended team size",
-    "key_roles": ["Roles needed"],
-    "estimated_total_effort": "Person-months or similar"
-  },
-  "roadmap_summary": "2-3 sentence executive summary of the roadmap"
-}
-
-Rules:
-- Sequence features logically — dependencies and high-priority (P0) items first.
-- Each phase should deliver tangible, demonstrable value.
-- Link features back to their IDs from the feature backlog.
-- Link milestones to KPIs where applicable.
-- Be realistic about timelines based on the project constraints.
-- Include at least 2-4 phases.
-"""
+from agents.base_agent import BaseAgent, load_prompt
 
 
 class RoadmapAgent(BaseAgent):
     name = "Product Roadmap Agent"
     description = "Creates a phased product roadmap from features, metrics, and constraints"
-    instructions = INSTRUCTIONS
+    instructions = load_prompt("roadmap_agent")
 
     def __init__(self, job_id: str, kernel: Kernel | None = None):
         super().__init__(job_id, kernel)

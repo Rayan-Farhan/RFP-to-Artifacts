@@ -1,48 +1,12 @@
 from typing import Any
 from semantic_kernel import Kernel
-from agents.base_agent import BaseAgent
-
-INSTRUCTIONS = """You are an expert RFP (Request for Proposal) document analyst.
-Your job is to parse a raw RFP document and extract its key sections into a structured format.
-
-You MUST return a JSON object with the following structure:
-{
-  "sections": {
-    "executive_summary": "...",
-    "project_overview": "...",
-    "scope_of_work": "...",
-    "requirements": "...",
-    "technical_requirements": "...",
-    "deliverables": "...",
-    "timeline": "...",
-    "evaluation_criteria": "...",
-    "budget_constraints": "...",
-    "submission_guidelines": "...",
-    "terms_and_conditions": "...",
-    "other": "..."
-  },
-  "metadata": {
-    "issuing_organization": "...",
-    "rfp_title": "...",
-    "issue_date": "...",
-    "due_date": "...",
-    "contact_info": "...",
-    "estimated_budget": "..."
-  }
-}
-
-Rules:
-- If a section is not found, set its value to an empty string.
-- Preserve important details and numbers exactly as stated.
-- Do NOT summarize excessively — keep detailed content.
-- Extract all metadata you can find.
-"""
+from agents.base_agent import BaseAgent, load_prompt
 
 
 class ParserAgent(BaseAgent):
     name = "RFP Parser Agent"
     description = "Extracts and structures sections from raw RFP text"
-    instructions = INSTRUCTIONS
+    instructions = load_prompt("parser_agent")
 
     def __init__(self, job_id: str, kernel: Kernel | None = None):
         super().__init__(job_id, kernel)
