@@ -20,6 +20,7 @@ from agents.roadmap_agent import RoadmapAgent
 from services.ai_service import create_kernel
 from services.foundry_tracing import trace_agent, trace_pipeline
 from services.foundry_evaluation import evaluate_artifacts
+from services.file_export_service import export_all
 from services import db_service
 
 logger = logging.getLogger(__name__)
@@ -200,6 +201,10 @@ class Workflow:
         # Run Azure AI Foundry evaluation on generated artifacts
         evaluation_report = await evaluate_artifacts(self.job_id, artifacts)
         artifacts["foundry_evaluation"] = evaluation_report
+
+        # Generate styled Excel/Word files and upload to Blob Storage
+        download_urls = await export_all(self.job_id, artifacts)
+        artifacts["download_urls"] = download_urls
 
         await db_service.save_artifacts(self.job_id, artifacts)
 
