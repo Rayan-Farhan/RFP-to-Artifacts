@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # ── Application ──
     app_env: str = "development"
     log_level: str = "INFO"
+    cors_allowed_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
 
     # ── Azure OpenAI ──
     azure_openai_endpoint: str = ""
@@ -39,7 +40,6 @@ class Settings(BaseSettings):
     agent_max_retries: int = 3
     agent_retry_base_delay: float = 1.0
 
-    # Find the Settings class and add these two fields:
     doc_intelligence_endpoint: str = ""
     doc_intelligence_key: str = ""
 
