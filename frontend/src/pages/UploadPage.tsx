@@ -14,8 +14,8 @@ const FEATURES = [
     icon: Zap,
     title: "10 AI Agents",
     desc: "Specialized agents process your RFP in parallel for speed and accuracy",
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
+    color: "text-orange-400",
+    bg: "bg-orange-400/10",
   },
   {
     icon: BarChart3,
@@ -28,8 +28,8 @@ const FEATURES = [
     icon: Shield,
     title: "Governance Built-in",
     desc: "Quality validation and compliance checks on every output",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function UploadPage() {
       {/* Ambient background orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-60 right-0 h-[500px] w-[500px] rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute -bottom-60 left-0 h-[500px] w-[500px] rounded-full bg-violet-500/10 blur-[120px]" />
+        <div className="absolute -bottom-60 left-0 h-[500px] w-[500px] rounded-full bg-amber-500/15 blur-[120px]" />
       </div>
 
       <motion.div
@@ -107,7 +107,7 @@ export default function UploadPage() {
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-foreground sm:text-6xl">
             Turn RFPs into
             <br />
-            <span className="bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-cyan-400 to-primary bg-clip-text text-transparent">
               Product Strategy
             </span>
           </h1>
@@ -222,7 +222,7 @@ export default function UploadPage() {
                 size="lg"
                 onClick={onSubmit}
                 disabled={uploading}
-                className="min-w-[200px] gap-2 bg-gradient-to-r from-primary to-violet-600 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:opacity-95"
+                className="min-w-[200px] gap-2 bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:opacity-95"
               >
                 {uploading ? (
                   <>

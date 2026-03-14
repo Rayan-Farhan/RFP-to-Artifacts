@@ -104,7 +104,7 @@ function AgentCard({
       </div>
       {status === "running" && (
         <motion.div
-          className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-violet-500"
+          className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-cyan-400"
           animate={{ width: ["0%", "100%", "0%"] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -223,9 +223,16 @@ export default function PipelinePage() {
               </span>
               <span>{progressPct}%</span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+              role="progressbar"
+              aria-valuenow={progressPct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Pipeline progress: ${completedAgents} of ${totalAgents} agents complete`}
+            >
               <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-primary to-violet-500"
+                className="h-full rounded-full bg-gradient-to-r from-primary to-cyan-400"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPct}%` }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -327,7 +334,7 @@ export default function PipelinePage() {
           <Button
             size="lg"
             onClick={() => navigate(`/job/${jobId}/results`)}
-            className="gap-2 bg-gradient-to-r from-primary to-violet-600 text-white shadow-lg shadow-primary/20"
+            className="gap-2 bg-gradient-to-r from-primary to-cyan-500 text-white shadow-lg shadow-primary/20"
           >
             View Results
             <ArrowRight className="h-4 w-4" />
