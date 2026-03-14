@@ -53,6 +53,8 @@ frontend/.env
 frontend/.env.*
 !frontend/.env.example
 frontend/bun.lockb
+node_modules
+package-lock.json
 
 # Logs
 *.log
