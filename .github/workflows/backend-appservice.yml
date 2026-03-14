@@ -38,6 +38,11 @@ jobs:
       - name: Run backend test
         run: pytest tests/ -v
 
+      - name: Vendor backend dependencies into artifact
+        run: |
+          mkdir -p .python_packages/lib/site-packages
+          pip install -r requirements.txt -t .python_packages/lib/site-packages
+
       - name: Deploy backend to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
