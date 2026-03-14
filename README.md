@@ -114,6 +114,7 @@ The pipeline is executed in **phases**, with **parallel execution inside phases*
 | AI Evaluation | **Azure AI Foundry** (relevance, coherence, groundedness scoring) + offline heuristic fallback |
 | Tracing | Azure AI Foundry + OpenTelemetry (pipeline spans + agent spans) |
 | Backend | Python, FastAPI, WebSockets |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
 | Document Processing | Azure Document Intelligence, PyPDF2, python-docx |
 | Database | Azure Cosmos DB (serverless) |
 | Storage | Azure Blob Storage |
@@ -130,6 +131,7 @@ The pipeline is executed in **phases**, with **parallel execution inside phases*
 ### Prerequisites
 
 - Python **3.12+**
+- **Node.js 18+** and **npm** (for the frontend)
 - Azure subscription with provisioned services (see [Azure Setup](#azure-setup))
 - Docker (optional)
 
@@ -155,6 +157,18 @@ copy .env.example .env   # Windows
 # Run the server
 uvicorn api.main:app --reload --port 8000
 ```
+
+#### Frontend
+
+See [`frontend/README.md`](frontend/README.md) for the full details. Quick start:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend dev server starts at **http://localhost:8080** and connects to the backend at `http://localhost:8000` by default. Set `VITE_API_URL` in `frontend/.env` to override the backend URL.
 
 ### Docker
 
@@ -268,6 +282,15 @@ rfp-product-engine/
 │       ├── upload.py
 │       ├── artifacts.py
 │       └── evaluation.py
+├── frontend/                        # React SPA (see frontend/README.md)
+│   ├── src/
+│   │   ├── components/              # UI components (shadcn/ui)
+│   │   ├── hooks/                   # React hooks (API, WebSocket)
+│   │   ├── lib/                     # API client, types, utilities
+│   │   └── pages/                   # Route pages
+│   ├── .env.example                 # Frontend environment template
+│   ├── package.json
+│   └── vite.config.ts
 ├── infra/
 │   └── main.bicep                   # Azure IaC template
 ├── tests/

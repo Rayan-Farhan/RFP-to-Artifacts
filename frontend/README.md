@@ -1,73 +1,78 @@
-# Welcome to your Lovable project
+# RFP Strategy Engine — Frontend
 
-## Project info
+React + TypeScript single-page application that provides the UI for the RFP Strategy Engine.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tech Stack
 
-## How can I edit this code?
+- [React 18](https://react.dev/) — UI library
+- [TypeScript](https://www.typescriptlang.org/) — type-safe JavaScript
+- [Vite](https://vitejs.dev/) — build tool and dev server
+- [Tailwind CSS](https://tailwindcss.com/) — utility-first CSS
+- [shadcn/ui](https://ui.shadcn.com/) — accessible component primitives
+- [TanStack React Query](https://tanstack.com/query) — data fetching and caching
+- [React Router v6](https://reactrouter.com/) — client-side routing
 
-There are several ways of editing your application.
+## Prerequisites
 
-**Use Lovable**
+- **Node.js 18+** and **npm** (or a compatible package manager)
+  - Recommended install method: [nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- The **backend API** running locally (default `http://localhost:8000`). See the [root README](../README.md#quick-start) for backend setup.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# 1. Navigate to the frontend directory
+cd frontend
 
-**Use your preferred IDE**
+# 2. Install dependencies
+npm install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# 3. (Optional) Create a local env file to override the API URL
+cp .env.example .env
+# Edit .env if your backend runs on a different host/port
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at **http://localhost:8080**.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Environment Variables
 
-**Use GitHub Codespaces**
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_URL` | `http://localhost:8000` | Backend API base URL |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Create a `.env` file in the `frontend/` directory (see `.env.example`) to override defaults. Vite only exposes variables prefixed with `VITE_`.
 
-## What technologies are used for this project?
+## Available Scripts
 
-This project is built with:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start the Vite dev server with hot-reload on port 8080 |
+| `npm run build` | Create an optimized production build in `dist/` |
+| `npm run preview` | Serve the production build locally for testing |
+| `npm run lint` | Run ESLint on the codebase |
+| `npm run test` | Run tests once with Vitest |
+| `npm run test:watch` | Run tests in watch mode |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```text
+frontend/
+├── public/              # Static assets
+├── src/
+│   ├── components/      # Reusable UI components (shadcn/ui based)
+│   ├── hooks/           # Custom React hooks (useArtifacts, useJobStatus, useWebSocket)
+│   ├── lib/             # API client, types, and utilities
+│   ├── pages/           # Route-level page components
+│   ├── test/            # Test setup
+│   ├── App.tsx          # Root component with routing
+│   └── main.tsx         # Entry point
+├── .env.example         # Environment variable template
+├── index.html           # HTML entry point
+├── package.json
+├── tailwind.config.ts
+├── tsconfig.json
+└── vite.config.ts
+```
