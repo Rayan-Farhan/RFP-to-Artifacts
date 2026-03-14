@@ -41,8 +41,8 @@ export interface Requirement {
   id: string;
   title: string;
   description: string;
-  category: "functional" | "non-functional" | "constraint" | "compliance";
-  priority: "must-have" | "should-have" | "could-have" | "wont-have";
+  category: "functional" | "non-functional" | "constraint" | "compliance" | string;
+  priority: "must-have" | "should-have" | "could-have" | "wont-have" | "won't-have" | string;
   source_section: string | null;
 }
 
@@ -112,19 +112,31 @@ export interface GovernanceReport {
 }
 
 // === Evaluation ===
+export interface OfflineCheck {
+  metric: string;
+  value: number | string;
+  score: number;
+  max_score: number;
+}
+
 export interface EvaluationReport {
   evaluation_source: "azure_ai_foundry" | "offline_heuristic";
-  sow_evaluation: {
-    relevance: number;
-    coherence: number;
-    groundedness: number;
+  // Azure AI Foundry fields
+  sow_evaluation?: {
+    relevance: number | Record<string, unknown>;
+    coherence: number | Record<string, unknown>;
+    groundedness: number | Record<string, unknown>;
   };
-  requirements_evaluation: {
-    relevance: number;
+  requirements_evaluation?: {
+    relevance: number | Record<string, unknown>;
     count: number;
   };
-  overall_score: number;
+  // Offline heuristic fields
+  checks?: OfflineCheck[];
+  // Shared
+  overall_score?: number;
   summary: string;
+  job_id?: string;
 }
 
 // === New artifact types (flexible structure) ===
@@ -198,7 +210,7 @@ export const ORCHESTRATION_PIPELINE: PipelineStage[] = [
     agents: [
       { name: "Feature Planning Agent", icon: "Kanban", description: "Building prioritized feature backlog" },
       { name: "Success Metrics Agent", icon: "BarChart3", description: "Defining KPIs and success criteria" },
-      { name: "Persona and Research Agent", icon: "Users", description: "Generating personas & research questions" },
+      { name: "Persona & Research Agent", icon: "Users", description: "Generating personas & research questions" },
     ],
   },
   {

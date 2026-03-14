@@ -8,6 +8,7 @@ const PRIORITY_STYLES: Record<string, string> = {
   "should-have": "bg-warning/15 text-warning",
   "could-have": "bg-primary/15 text-primary",
   "wont-have": "bg-muted text-muted-foreground",
+  "won't-have": "bg-muted text-muted-foreground",
 };
 
 const CATEGORY_STYLES: Record<string, string> = {

@@ -59,13 +59,18 @@ export default function ResultsPage() {
 
   const handleDownloadAll = () => {
     DOWNLOAD_ARTIFACTS.forEach((a) => {
-      const url = downloadUrls?.[a.key] || getDownloadUrl(jobId!, a.key);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${a.key}.${a.ext}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const blobUrl = downloadUrls?.[a.key];
+      if (blobUrl) {
+        window.open(blobUrl, "_blank");
+      } else {
+        const url = getDownloadUrl(jobId!, a.key);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${a.key}.${a.ext}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     });
   };
 

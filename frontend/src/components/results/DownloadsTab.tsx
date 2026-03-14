@@ -11,11 +11,20 @@ export function DownloadsTab({
   downloadUrls?: Record<string, string>;
 }) {
   const handleDownload = (artifactKey: string, ext: string) => {
-    const url = downloadUrls?.[artifactKey] || getDownloadUrl(jobId, artifactKey);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${artifactKey}.${ext}`;
-    link.click();
+    const blobUrl = downloadUrls?.[artifactKey];
+    if (blobUrl) {
+      // Azure Blob URLs are cross-origin, so open directly (Content-Disposition handles it)
+      window.open(blobUrl, "_blank");
+    } else {
+      // Fallback to API download endpoint
+      const url = getDownloadUrl(jobId, artifactKey);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${artifactKey}.${ext}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (

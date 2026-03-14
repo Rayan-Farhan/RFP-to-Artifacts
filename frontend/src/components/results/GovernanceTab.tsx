@@ -6,24 +6,30 @@ import type { GovernanceReport } from "@/lib/types";
 export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
   if (!report) return <p className="text-muted-foreground">No governance report available.</p>;
 
+  const checks = report.checks ?? [];
+  const missingInfo = report.missing_information ?? [];
+  const contradictions = report.contradictions ?? [];
+  const riskFlags = report.risk_flags ?? [];
+
   return (
     <div className="space-y-8">
       {/* Top */}
       <div className="flex flex-col items-center gap-4 rounded-lg border bg-card p-6 sm:flex-row sm:items-start sm:gap-8">
-        <ScoreGauge score={report.overall_score} size={140} label="Overall Score" status={report.status} />
+        <ScoreGauge score={report.overall_score ?? 0} size={140} label="Overall Score" status={report.status} />
         <div className="flex-1">
           <div className="mb-2">
-            <StatusBadge status={report.status} />
+            <StatusBadge status={report.status ?? "pending"} />
           </div>
-          <p className="text-sm text-foreground leading-relaxed">{report.summary}</p>
+          <p className="text-sm text-foreground leading-relaxed">{report.summary ?? ""}</p>
         </div>
       </div>
 
       {/* Checks */}
+      {checks.length > 0 && (
       <div>
         <h2 className="mb-4 text-lg font-semibold text-foreground">Quality Checks</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {report.checks.map((check, i) => (
+          {checks.map((check, i) => (
             <div key={i} className="rounded-lg border bg-card p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium text-foreground">{check.check_name}</h3>
@@ -48,7 +54,7 @@ export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">{check.findings}</p>
-              {check.recommendations.length > 0 && (
+              {(check.recommendations ?? []).length > 0 && (
                 <ul className="mt-2 list-disc pl-4 text-xs text-muted-foreground space-y-0.5">
                   {check.recommendations.map((r, j) => (
                     <li key={j}>{r}</li>
@@ -59,43 +65,44 @@ export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
           ))}
         </div>
       </div>
+      )}
 
       {/* Bottom sections */}
       <div className="grid gap-4 sm:grid-cols-3">
-        {report.missing_information.length > 0 && (
+        {missingInfo.length > 0 && (
           <div className="rounded-lg border bg-card p-5">
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="h-4 w-4 text-warning" />
               <h3 className="text-sm font-medium text-foreground">Missing Information</h3>
             </div>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              {report.missing_information.map((m, i) => (
+              {missingInfo.map((m, i) => (
                 <li key={i}>• {m}</li>
               ))}
             </ul>
           </div>
         )}
-        {report.contradictions.length > 0 && (
+        {contradictions.length > 0 && (
           <div className="rounded-lg border bg-card p-5">
             <div className="flex items-center gap-2 mb-3">
               <AlertCircle className="h-4 w-4 text-destructive" />
               <h3 className="text-sm font-medium text-foreground">Contradictions</h3>
             </div>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              {report.contradictions.map((c, i) => (
+              {contradictions.map((c, i) => (
                 <li key={i}>• {c}</li>
               ))}
             </ul>
           </div>
         )}
-        {report.risk_flags.length > 0 && (
+        {riskFlags.length > 0 && (
           <div className="rounded-lg border bg-card p-5">
             <div className="flex items-center gap-2 mb-3">
               <Flag className="h-4 w-4 text-destructive" />
               <h3 className="text-sm font-medium text-foreground">Risk Flags</h3>
             </div>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              {report.risk_flags.map((r, i) => (
+              {riskFlags.map((r, i) => (
                 <li key={i}>• {r}</li>
               ))}
             </ul>

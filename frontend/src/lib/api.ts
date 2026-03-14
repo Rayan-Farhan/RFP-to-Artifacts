@@ -34,12 +34,14 @@ export async function getArtifacts(jobId: string): Promise<ArtifactsResponse> {
 
 export async function getEvaluation(jobId: string): Promise<EvaluationReport> {
   const res = await fetch(`${API_URL}/api/evaluation/${jobId}`);
-  return handleResponse(res);
+  const data = await handleResponse<{ job_id: string; evaluation: EvaluationReport }>(res);
+  return data.evaluation;
 }
 
-export async function rerunEvaluation(jobId: string): Promise<void> {
+export async function rerunEvaluation(jobId: string): Promise<EvaluationReport> {
   const res = await fetch(`${API_URL}/api/evaluation/${jobId}/rerun`, { method: "POST" });
-  if (!res.ok) throw new Error("Failed to re-run evaluation");
+  const data = await handleResponse<{ job_id: string; evaluation: EvaluationReport; rerun: boolean }>(res);
+  return data.evaluation;
 }
 
 export function getDownloadUrl(jobId: string, artifactType: string): string {
