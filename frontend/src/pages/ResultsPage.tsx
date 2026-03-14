@@ -126,7 +126,7 @@ export default function ResultsPage() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent pointer-events-none sm:hidden" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
           </div>
 
           <TabsContent value="overview">

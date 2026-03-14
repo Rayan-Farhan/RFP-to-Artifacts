@@ -36,7 +36,7 @@ export function Header() {
           <div className="flex flex-col">
             <span className="text-sm font-semibold leading-tight text-foreground">RFP Strategy Engine</span>
             {!isHome && (
-              <span className="text-[10px] leading-tight text-muted-foreground">AI-Powered Analysis</span>
+              <span className="text-xs leading-none text-muted-foreground">AI-Powered Analysis</span>
             )}
           </div>
         </Link>
