@@ -98,7 +98,7 @@ export default function UploadPage() {
             className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary"
           >
             <Sparkles className="h-3 w-3" />
-            Powered by Azure OpenAI &amp; Semantic Kernel
+            Powered by Azure OpenAI & Semantic Kernel
           </motion.span>
         </div>
 
@@ -157,7 +157,7 @@ export default function UploadPage() {
                 </div>
                 <div>
                   <p className="text-base font-semibold text-foreground">
-                    Drag &amp; drop your RFP document
+                    Drag & drop your RFP document
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     or{" "}

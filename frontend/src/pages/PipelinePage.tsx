@@ -284,7 +284,7 @@ export default function PipelinePage() {
                           ? "md:grid-cols-3"
                           : "md:grid-cols-2"
                       }`
-                    : ""
+                    : "space-y-3"
                 }
               >
                 {stage.agents.map((agent) => {

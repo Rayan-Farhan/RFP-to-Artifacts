@@ -1,4 +1,8 @@
-"""In-memory cancellation flag store for pipeline jobs."""
+"""In-memory cancellation flag store for pipeline jobs.
+
+Note: This module is used only from async FastAPI request handlers running on a
+single asyncio event loop, so plain dict access is safe without a lock.
+"""
 
 _cancel_flags: dict[str, bool] = {}
 
