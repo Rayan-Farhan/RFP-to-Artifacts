@@ -1,13 +1,25 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, X, Loader2 } from "lucide-react";
+import {
+  Upload, FileText, X, Loader2,
+  ListChecks, Users, FileSignature, BarChart3, ShieldCheck, Map
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { uploadRFP } from "@/lib/api";
 import { toast } from "sonner";
 
 const ACCEPTED = [".pdf", ".docx", ".doc", ".txt"];
 const MAX_SIZE = 50 * 1024 * 1024;
+
+const FEATURES = [
+  { icon: ListChecks, title: "Requirements", desc: "Extract and categorize requirements" },
+  { icon: Users, title: "Personas", desc: "Generate user personas & interview questions" },
+  { icon: Map, title: "Roadmap", desc: "Build a phased product roadmap" },
+  { icon: FileSignature, title: "SOW", desc: "Draft a Statement of Work" },
+  { icon: BarChart3, title: "Metrics", desc: "Define success metrics & KPIs" },
+  { icon: ShieldCheck, title: "Governance", desc: "Quality checks & compliance scoring" },
+];
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -52,16 +64,28 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+    <div className="relative flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      {/* Subtle background grid */}
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-[0.4] dark:opacity-[0.07]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl text-center"
+        className="relative z-10 w-full max-w-2xl text-center"
       >
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Transform RFPs into
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+          </span>
+          AI-Powered Multi-Agent Pipeline
+        </div>
+
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <span className="text-foreground">Transform RFPs into</span>
           <br />
-          <span className="text-primary">Product Strategy</span>
+          <span className="text-gradient">Product Strategy</span>
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
           Upload an enterprise RFP and let our AI agents extract requirements, plan features,
@@ -69,12 +93,12 @@ export default function UploadPage() {
         </p>
 
         <motion.div
-          className={`mt-10 rounded-xl border-2 border-dashed p-12 transition-colors ${
+          className={`mt-10 rounded-xl border-2 border-dashed p-12 transition-all duration-200 ${
             dragOver
-              ? "border-primary bg-primary/5"
+              ? "border-primary bg-primary/5 shadow-lg shadow-primary/5"
               : file
               ? "border-success/50 bg-success/5"
-              : "border-border hover:border-muted-foreground/40"
+              : "border-border hover:border-muted-foreground/40 hover:bg-muted/30"
           }`}
           onDragOver={(e) => {
             e.preventDefault();
@@ -94,8 +118,8 @@ export default function UploadPage() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center gap-4"
               >
-                <div className="rounded-full bg-muted p-4">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
+                <div className="rounded-full bg-primary/10 p-4">
+                  <Upload className="h-8 w-8 text-primary" />
                 </div>
                 <div>
                   <p className="text-lg font-medium text-foreground">
@@ -103,7 +127,7 @@ export default function UploadPage() {
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     or{" "}
-                    <label className="cursor-pointer text-primary hover:underline">
+                    <label className="cursor-pointer font-medium text-primary hover:underline">
                       browse files
                       <input
                         type="file"
@@ -127,7 +151,7 @@ export default function UploadPage() {
                 className="flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2">
+                  <div className="rounded-lg bg-primary/10 p-2.5">
                     <FileText className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-left">
@@ -156,7 +180,12 @@ export default function UploadPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-6"
           >
-            <Button size="lg" onClick={onSubmit} disabled={uploading} className="min-w-[200px]">
+            <Button
+              size="lg"
+              onClick={onSubmit}
+              disabled={uploading}
+              className="min-w-[200px] shadow-lg shadow-primary/20"
+            >
               {uploading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -168,6 +197,28 @@ export default function UploadPage() {
             </Button>
           </motion.div>
         )}
+
+        {/* Feature cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-3"
+        >
+          {FEATURES.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.05 }}
+              className="group rounded-lg border border-border/50 bg-card/50 p-3 text-left transition-colors hover:border-primary/30 hover:bg-primary/5"
+            >
+              <f.icon className="mb-2 h-4 w-4 text-primary" />
+              <p className="text-sm font-medium text-foreground">{f.title}</p>
+              <p className="text-xs text-muted-foreground">{f.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </motion.div>
     </div>
   );

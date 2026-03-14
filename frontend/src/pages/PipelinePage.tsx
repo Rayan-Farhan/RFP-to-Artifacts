@@ -43,14 +43,14 @@ function AgentCard({
 }) {
   return (
     <div
-      className={`relative rounded-lg border p-4 transition-all ${
+      className={`relative overflow-hidden rounded-xl border p-4 transition-all ${
         status === "running"
-          ? "border-primary glow-primary bg-primary/5"
+          ? "border-primary/50 bg-primary/5 shadow-md shadow-primary/10"
           : status === "completed"
-          ? "border-success/50 bg-success/5"
+          ? "border-success/40 bg-success/5"
           : status === "failed"
-          ? "border-destructive/50 bg-destructive/5"
-          : "border-border bg-card opacity-50"
+          ? "border-destructive/40 bg-destructive/5"
+          : "border-border bg-card opacity-60"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -128,12 +128,21 @@ export default function PipelinePage() {
     return { status: log.status, msg: log.message, dur: log.duration_seconds, tok: log.tokens_used };
   };
 
+  const totalAgents = ORCHESTRATION_PIPELINE.reduce((sum, s) => sum + s.agents.length, 0);
+  const completedAgents = ORCHESTRATION_PIPELINE.reduce(
+    (sum, s) => sum + s.agents.filter((a) => getAgentStatus(a.name).status === "completed").length,
+    0
+  );
+  const progressPct = totalAgents > 0 ? Math.round((completedAgents / totalAgents) * 100) : 0;
+
   return (
     <div className="container max-w-4xl py-8">
       {/* Job info bar */}
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-muted-foreground" />
+          <div className="rounded-lg bg-primary/10 p-2">
+            <FileText className="h-5 w-5 text-primary" />
+          </div>
           <div>
             <p className="font-medium text-foreground">{job?.filename || "Processing…"}</p>
             <p className="text-xs text-muted-foreground">
@@ -146,11 +155,29 @@ export default function PipelinePage() {
           {!connected && status !== "completed" && status !== "failed" && (
             <span className="text-xs text-warning">Polling mode</span>
           )}
-          <span className="text-sm tabular-nums text-muted-foreground">
+          <span className="rounded-md bg-muted px-2.5 py-1 text-sm font-mono tabular-nums text-muted-foreground">
             {Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, "0")}
           </span>
         </div>
       </div>
+
+      {/* Overall progress bar */}
+      {status !== "completed" && status !== "failed" && (
+        <div className="mb-8">
+          <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
+            <span>Pipeline Progress</span>
+            <span>{completedAgents} / {totalAgents} agents</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-blue-400"
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Stage-based pipeline */}
       <div className="space-y-6">
@@ -243,9 +270,17 @@ export default function PipelinePage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 flex justify-center"
+          className="mt-8 flex flex-col items-center gap-3"
         >
-          <Button size="lg" onClick={() => navigate(`/job/${jobId}/results`)} className="gap-2">
+          <div className="flex items-center gap-2 text-sm text-success">
+            <Check className="h-4 w-4" />
+            <span>All agents completed successfully</span>
+          </div>
+          <Button
+            size="lg"
+            onClick={() => navigate(`/job/${jobId}/results`)}
+            className="gap-2 shadow-lg shadow-primary/20"
+          >
             View Results <ArrowRight className="h-4 w-4" />
           </Button>
         </motion.div>

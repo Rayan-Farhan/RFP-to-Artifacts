@@ -36,10 +36,17 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="container py-12">
+      <div className="container max-w-7xl py-12">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="h-10 w-10 animate-pulse rounded-full bg-muted" />
+          <div className="space-y-2">
+            <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+            <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+          </div>
+        </div>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
           ))}
         </div>
       </div>
@@ -91,7 +98,7 @@ export default function ResultsPage() {
         {/* Top bar */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-full">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -107,17 +114,20 @@ export default function ResultsPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="mb-6 flex w-full flex-wrap justify-start gap-1 bg-transparent p-0">
-            {TABS.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab.toLowerCase().replace(/ /g, "-")}
-                className="rounded-md border border-transparent px-3 py-1.5 text-sm data-[state=active]:border-border data-[state=active]:bg-muted"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="relative mb-6">
+            <TabsList className="flex w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 scrollbar-hide">
+              {TABS.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab.toLowerCase().replace(/ /g, "-")}
+                  className="shrink-0 rounded-md border border-transparent px-3 py-1.5 text-sm transition-all data-[state=active]:border-primary/30 data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-background to-transparent pointer-events-none sm:hidden" />
+          </div>
 
           <TabsContent value="overview">
             <OverviewTab artifacts={artifacts} />
