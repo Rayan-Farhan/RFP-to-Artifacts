@@ -13,6 +13,11 @@ from api.ws import websocket_endpoint
 from services.foundry_tracing import init_tracing
 
 settings = get_settings()
+allowed_origins = [
+    origin.strip()
+    for origin in settings.cors_allowed_origins.split(",")
+    if origin.strip()
+]
 
 logging.basicConfig(
     level=getattr(logging, settings.log_level, logging.INFO),
@@ -38,7 +43,7 @@ app = FastAPI(
 # CORS — allow frontend dev server
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:8080"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
