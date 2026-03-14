@@ -9,6 +9,7 @@ from api.routes.upload import router as upload_router
 from api.routes.artifacts import router as artifacts_router
 from api.routes.evaluation import router as evaluation_router
 from api.routes.download import router as download_router
+from api.routes.cancel import router as cancel_router
 from api.ws import websocket_endpoint
 from services.foundry_tracing import init_tracing
 
@@ -49,6 +50,7 @@ app.include_router(upload_router, prefix="/api", tags=["Upload"])
 app.include_router(artifacts_router, prefix="/api", tags=["Artifacts"])
 app.include_router(evaluation_router, prefix="/api", tags=["Evaluation"])
 app.include_router(download_router, prefix="/api", tags=["Download"])
+app.include_router(cancel_router, prefix="/api", tags=["Cancel"])
 
 # WebSocket route
 app.websocket("/ws/{job_id}")(websocket_endpoint)

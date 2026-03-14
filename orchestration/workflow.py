@@ -22,6 +22,7 @@ from services.foundry_tracing import trace_agent, trace_pipeline
 from services.foundry_evaluation import evaluate_artifacts
 from services.file_export_service import export_all
 from services import db_service
+from services import cancel_service
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +135,27 @@ class Workflow:
         # Wrap the entire pipeline in an Azure AI Foundry trace span
         with trace_pipeline(self.job_id):
             for phase_num, phase_agents in enumerate(phases, start=1):
+                # Check for user-requested cancellation before each phase
+                if cancel_service.is_cancelled(self.job_id):
+                    logger.info("Pipeline cancelled by user for job %s (before phase %d)", self.job_id, phase_num)
+                    cancel_log = AgentLog(
+                        agent_name="System",
+                        status=AgentStatus.FAILED,
+                        message="Cancelled by user",
+                    )
+                    agent_logs.append(cancel_log)
+                    if self.on_progress:
+                        await self.on_progress(self.job_id, cancel_log)
+                    await db_service.save_job({
+                        "job_id": self.job_id,
+                        "status": JobStatus.FAILED.value,
+                        "error": "Cancelled by user",
+                        "agent_logs": [l.model_dump(mode="json") for l in agent_logs],
+                        "updated_at": datetime.utcnow().isoformat(),
+                    })
+                    cancel_service.clear(self.job_id)
+                    return {}
+
                 logger.info(
                     "Phase %d: running %d agent(s) — %s",
                     phase_num,
@@ -155,7 +177,6 @@ class Workflow:
                         )
 
                 except Exception as e:
-                    # Find which agent failed for the log
                     failed_agent_name = "Unknown"
                     for agent in phase_agents:
                         # The failing agent is whichever isn't in the completed logs

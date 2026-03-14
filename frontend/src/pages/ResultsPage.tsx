@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useArtifacts } from "@/hooks/useArtifacts";
@@ -17,8 +17,22 @@ import { SOWTab } from "@/components/results/SOWTab";
 import { GovernanceTab } from "@/components/results/GovernanceTab";
 import { EvaluationTab } from "@/components/results/EvaluationTab";
 import { DownloadsTab } from "@/components/results/DownloadsTab";
-import { getDownloadUrl } from "@/lib/api";
-import { DOWNLOAD_ARTIFACTS } from "@/lib/types";
+
+const TABS = [
+  { label: "Overview", value: "overview" },
+  { label: "Parsed RFP", value: "parsed-rfp" },
+  { label: "Problem Statement", value: "problem-statement" },
+  { label: "Market Research", value: "market-research" },
+  { label: "Requirements", value: "requirements" },
+  { label: "Features", value: "features" },
+  { label: "Success Metrics", value: "success-metrics" },
+  { label: "Roadmap", value: "roadmap" },
+  { label: "Personas", value: "personas" },
+  { label: "SOW", value: "sow" },
+  { label: "Governance", value: "governance" },
+  { label: "Evaluation", value: "evaluation" },
+  { label: "Downloads", value: "downloads" },
+];
 
 export default function ResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
@@ -39,7 +53,7 @@ export default function ResultsPage() {
       <div className="container py-12">
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
           ))}
         </div>
       </div>
@@ -57,52 +71,23 @@ export default function ResultsPage() {
     );
   }
 
-  const handleDownloadAll = () => {
-    DOWNLOAD_ARTIFACTS.forEach((a) => {
-      const url = getDownloadUrl(jobId!, a.key);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${a.key}.${a.ext}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-  };
-
-  const TABS = [
-    "Overview",
-    "Parsed RFP",
-    "Problem Statement",
-    "Market Research",
-    "Requirements",
-    "Features",
-    "Success Metrics",
-    "Roadmap",
-    "Personas",
-    "SOW",
-    "Governance",
-    "Evaluation",
-    "Downloads",
-  ];
-
   return (
     <div className="container max-w-7xl py-6">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Top bar */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Results Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Job {jobId?.slice(0, 8)}…</p>
-            </div>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleDownloadAll} className="gap-1.5">
-            <Download className="h-4 w-4" />
-            Download All
+        <div className="mb-6 flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="rounded-lg"
+          >
+            <ArrowLeft className="h-4 w-4" />
           </Button>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Results Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Job {jobId?.slice(0, 8)}…</p>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -110,11 +95,11 @@ export default function ResultsPage() {
           <TabsList className="mb-6 flex w-full flex-wrap justify-start gap-1 bg-transparent p-0">
             {TABS.map((tab) => (
               <TabsTrigger
-                key={tab}
-                value={tab.toLowerCase().replace(/ /g, "-")}
-                className="rounded-md border border-transparent px-3 py-1.5 text-sm data-[state=active]:border-border data-[state=active]:bg-muted"
+                key={tab.value}
+                value={tab.value}
+                className="rounded-lg border border-transparent px-3 py-1.5 text-sm transition-colors data-[state=active]:border-primary/30 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
               >
-                {tab}
+                {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>

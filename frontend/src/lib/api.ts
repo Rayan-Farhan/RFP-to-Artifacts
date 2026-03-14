@@ -48,6 +48,11 @@ export function getDownloadUrl(jobId: string, artifactType: string): string {
   return `${API_URL}/api/download/${jobId}/${artifactType}`;
 }
 
+export async function cancelJob(jobId: string): Promise<{ job_id: string; message: string }> {
+  const res = await fetch(`${API_URL}/api/cancel/${jobId}`, { method: "POST" });
+  return handleResponse(res);
+}
+
 export async function healthCheck(): Promise<{ status: string }> {
   const res = await fetch(`${API_URL}/health`);
   return handleResponse(res);

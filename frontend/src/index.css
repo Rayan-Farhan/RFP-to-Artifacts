@@ -105,4 +105,10 @@
   .glow-success {
     box-shadow: 0 0 20px hsl(var(--success) / 0.3), 0 0 60px hsl(var(--success) / 0.1);
   }
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent;
+  }
+  .glass-card {
+    @apply rounded-xl border bg-card/60 backdrop-blur-sm;
+  }
 }
