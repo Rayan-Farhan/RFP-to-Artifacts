@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, Copy, CheckCheck, Sparkles, AlertCircle } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useArtifacts } from "@/hooks/useArtifacts";
@@ -24,6 +25,7 @@ export default function ResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const { data: response, isLoading, error } = useArtifacts(jobId);
+  const [copied, setCopied] = useState(false);
 
   // If still processing, redirect back to pipeline
   if (response && response.status === "processing") {
@@ -34,12 +36,26 @@ export default function ResultsPage() {
   const artifacts = response?.artifacts;
   const downloadUrls = response?.download_urls;
 
+  const handleCopyJobId = () => {
+    if (jobId) {
+      navigator.clipboard.writeText(jobId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="container py-12">
         <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden h-24 rounded-xl bg-muted"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <div className="absolute inset-0 shimmer" />
+            </div>
           ))}
         </div>
       </div>
@@ -49,10 +65,14 @@ export default function ResultsPage() {
   if (error || !artifacts) {
     return (
       <div className="container flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-destructive">Failed to load artifacts. Job may still be processing.</p>
-        <Button variant="outline" onClick={() => navigate(`/job/${jobId}`)}>
-          Back to Pipeline
-        </Button>
+        <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center max-w-md">
+          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-destructive/70" />
+          <p className="font-semibold text-foreground">Failed to load artifacts</p>
+          <p className="mt-1 text-sm text-muted-foreground">Job may still be processing.</p>
+          <Button variant="outline" className="mt-4" onClick={() => navigate(`/job/${jobId}`)}>
+            Back to Pipeline
+          </Button>
+        </div>
       </div>
     );
   }
@@ -89,20 +109,47 @@ export default function ResultsPage() {
     <div className="container max-w-7xl py-6">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Top bar */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Results Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Job {jobId?.slice(0, 8)}…</p>
+        <div className="mb-6 overflow-hidden rounded-xl border bg-card shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-primary/10 hover:text-primary"
+                onClick={() => navigate("/")}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-primary/20 to-violet-500/15 p-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-foreground">Results Dashboard</h1>
+                  <button
+                    onClick={handleCopyJobId}
+                    aria-label="Copy job ID"
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <span className="font-mono">Job {jobId?.slice(0, 8)}…</span>
+                    {copied ? (
+                      <CheckCheck className="h-3 w-3 text-green-500" />
+                    ) : (
+                      <Copy className="h-3 w-3" />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
+            <Button
+              size="sm"
+              onClick={handleDownloadAll}
+              className="gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-sm hover:opacity-90"
+            >
+              <Download className="h-4 w-4" />
+              Download All
+            </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={handleDownloadAll} className="gap-1.5">
-            <Download className="h-4 w-4" />
-            Download All
-          </Button>
         </div>
 
         {/* Tabs */}
@@ -112,7 +159,7 @@ export default function ResultsPage() {
               <TabsTrigger
                 key={tab}
                 value={tab.toLowerCase().replace(/ /g, "-")}
-                className="rounded-md border border-transparent px-3 py-1.5 text-sm data-[state=active]:border-border data-[state=active]:bg-muted"
+                className="rounded-full border border-transparent px-3.5 py-1.5 text-sm font-medium transition-all data-[state=active]:border-primary/30 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500/15 data-[state=active]:to-violet-500/15 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50"
               >
                 {tab}
               </TabsTrigger>
