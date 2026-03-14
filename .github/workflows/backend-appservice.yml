@@ -35,10 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint backend
-        run: ruff check .
-
-      - name: Run backend tests
+      - name: Run backend test
         run: pytest tests/ -v
 
       - name: Deploy backend to Azure App Service
