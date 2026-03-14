@@ -179,7 +179,7 @@ export default function PipelinePage() {
             {!connected && status !== "completed" && status !== "failed" && (
               <span className="text-xs text-warning">Polling mode</span>
             )}
-            <span className="rounded-md bg-muted px-2 py-1 text-sm tabular-nums font-mono text-muted-foreground">
+            <span className="rounded-md bg-muted px-2 py-1 text-sm tabular-nums text-muted-foreground">
               {Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, "0")}
             </span>
           </div>
