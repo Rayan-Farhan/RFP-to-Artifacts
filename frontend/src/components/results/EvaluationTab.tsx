@@ -41,20 +41,20 @@ export function EvaluationTab({ evaluation: initialEval, jobId }: { evaluation: 
   return (
     <div className="space-y-8">
       {/* Source & Overall */}
-      <div className="flex flex-col items-center gap-6 rounded-lg border bg-card p-6 sm:flex-row sm:items-start sm:gap-10">
+      <div className="flex flex-col items-center gap-6 rounded-xl border bg-card p-6 card-elevated sm:flex-row sm:items-start sm:gap-10">
         <ScoreGauge score={evaluation.overall_score ?? 0} size={140} label="Overall Score" />
         <div className="flex-1 space-y-3">
           <div className="flex items-center gap-3">
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                 !isOffline
-                  ? "bg-primary/15 text-primary"
+                  ? "bg-primary/10 text-primary"
                   : "bg-muted text-muted-foreground"
               }`}
             >
               {!isOffline ? "Azure AI Foundry" : "Offline Heuristic"}
             </span>
-            <Button variant="outline" size="sm" onClick={handleRerun} disabled={rerunning} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={handleRerun} disabled={rerunning} className="gap-1.5 rounded-lg">
               {rerunning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
               Re-run
             </Button>
@@ -66,22 +66,22 @@ export function EvaluationTab({ evaluation: initialEval, jobId }: { evaluation: 
       {/* Offline heuristic checks */}
       {isOffline && evaluation.checks && evaluation.checks.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Evaluation Checks</h2>
+          <h2 className="mb-5 text-lg font-semibold text-foreground">Evaluation Checks</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {evaluation.checks.map((check, i) => (
-              <div key={i} className="rounded-lg border bg-card p-5">
+              <div key={i} className="rounded-xl border bg-card p-5 card-elevated transition-all duration-200 hover:border-primary/20">
                 <h3 className="text-sm font-medium text-foreground capitalize">
                   {check.metric.replace(/_/g, " ")}
                 </h3>
                 <p className="mt-1 text-xs text-muted-foreground">Value: {String(check.value)}</p>
                 <div className="mt-3">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
                     <span>Score</span>
-                    <span>{check.score}/{check.max_score}</span>
+                    <span className="font-medium">{check.score}/{check.max_score}</span>
                   </div>
                   <div className="h-2 rounded-full bg-muted overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all ${
+                      className={`h-full rounded-full transition-all duration-500 ${
                         check.score / check.max_score >= 0.8
                           ? "bg-success"
                           : check.score / check.max_score >= 0.5
@@ -101,10 +101,10 @@ export function EvaluationTab({ evaluation: initialEval, jobId }: { evaluation: 
       {/* Azure AI Foundry: SOW Evaluation */}
       {!isOffline && evaluation.sow_evaluation && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">SOW Evaluation</h2>
+          <h2 className="mb-5 text-lg font-semibold text-foreground">SOW Evaluation</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {(["relevance", "coherence", "groundedness"] as const).map((metric) => (
-              <div key={metric} className="flex flex-col items-center rounded-lg border bg-card p-6">
+              <div key={metric} className="flex flex-col items-center rounded-xl border bg-card p-6 card-elevated">
                 <ScoreGauge
                   score={extractScore(evaluation.sow_evaluation![metric])}
                   size={100}
@@ -119,17 +119,17 @@ export function EvaluationTab({ evaluation: initialEval, jobId }: { evaluation: 
       {/* Azure AI Foundry: Requirements Evaluation */}
       {!isOffline && evaluation.requirements_evaluation && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Requirements Evaluation</h2>
+          <h2 className="mb-5 text-lg font-semibold text-foreground">Requirements Evaluation</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col items-center rounded-lg border bg-card p-6">
+            <div className="flex flex-col items-center rounded-xl border bg-card p-6 card-elevated">
               <ScoreGauge
                 score={extractScore(evaluation.requirements_evaluation.relevance)}
                 size={100}
                 label="Relevance"
               />
             </div>
-            <div className="flex flex-col items-center rounded-lg border bg-card p-6">
-              <p className="text-sm text-muted-foreground">Requirements Count</p>
+            <div className="flex flex-col items-center rounded-xl border bg-card p-6 card-elevated">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Requirements Count</p>
               <p className="mt-2 text-4xl font-bold text-foreground">{evaluation.requirements_evaluation.count}</p>
             </div>
           </div>
