@@ -25,11 +25,9 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
         <Link to="/" className="group flex items-center gap-2.5 transition-opacity hover:opacity-80">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-sm transition-transform group-hover:scale-105">
-            <span className="text-sm font-bold text-primary-foreground">R</span>
-          </div>
+          <img src="/logo.png" alt="RFP Strategy Engine" className="h-9 w-9 rounded-lg object-contain transition-transform group-hover:scale-105" />
           <div className="flex flex-col">
             <span className="text-base font-semibold leading-tight text-foreground">RFP Strategy Engine</span>
             <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">AI-Powered Analysis</span>
