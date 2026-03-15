@@ -11,7 +11,7 @@
 [![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-### [Live Demo](https://mango-plant-0f448b800.1.azurestaticapps.net) | [Watch Demo Video](#demo)
+### [Click here to access the live app on Azure](https://mango-plant-0f448b800.1.azurestaticapps.net)
 
 ---
 
