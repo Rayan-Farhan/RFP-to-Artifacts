@@ -124,5 +124,6 @@ async def _run_pipeline(job_id: str, raw_text: str):
         await workflow.run(raw_text)
     except asyncio.CancelledError:
         logger.info("Pipeline cancelled for job %s", job_id)
+        raise
     except Exception as e:
         logger.error("Pipeline failed for job %s: %s", job_id, e, exc_info=True)
