@@ -28,6 +28,6 @@ Rules:
   * "may", "nice to have", "desirable", "optionally" → could-have.
   * "future", "out of scope for now", "not required" → wont-have.
 - Number requirements sequentially: REQ-001, REQ-002, etc.
-- Write each description with enough detail that a developer or product manager could act on it without referring back to the original RFP.
+- Write each description with enough detail that a developer or product manager could act on it without referring back to the original RFP. For example, instead of "System must be fast," write "The system must return search results within 2 seconds under a load of 500 concurrent users, as specified in the performance requirements section."
 - Avoid duplicates — if two RFP passages describe the same requirement, merge them into one entry and reference both source sections.
 - Be thorough — missing a requirement leads to gaps in the feature backlog and SOW. It is far better to extract too many than too few.

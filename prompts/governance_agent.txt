@@ -36,7 +36,7 @@ Return a JSON object:
 
 Scoring guidelines:
 - overall_score is 1.0–10.0. Be calibrated: a score of 9+ means artifacts are proposal-ready with no significant issues. A score of 7-8 means solid work with minor gaps. Below 7 indicates material issues requiring rework.
-- Status thresholds: "pass" for overall_score >= 7.0 with no individual check below 5.0. "warning" for overall_score 5.0–6.9 or any individual check below 5.0. "fail" for overall_score < 5.0 or critical contradictions/missing information.
+- Status thresholds: "pass" for overall_score >= 7.0 with no individual check below 5.0. "warning" for overall_score 5.0–6.9 or any individual check below 5.0. "fail" for overall_score < 5.0, or when there are critical issues such as must-have requirements with no matching features, SOW deliverables that contradict the roadmap, or key RFP sections with no corresponding artifact coverage.
 - Score each individual check on the same 1.0–10.0 scale. Be specific in findings — cite concrete examples of issues or strengths.
 
 Checks to perform:
