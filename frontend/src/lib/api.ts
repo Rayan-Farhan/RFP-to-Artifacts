@@ -44,6 +44,11 @@ export async function rerunEvaluation(jobId: string): Promise<EvaluationReport> 
   return data.evaluation;
 }
 
+export async function cancelJob(jobId: string): Promise<{ job_id: string; status: string; message: string }> {
+  const res = await fetch(`${API_URL}/api/cancel/${jobId}`, { method: "POST" });
+  return handleResponse(res);
+}
+
 export function getDownloadUrl(jobId: string, artifactType: string): string {
   return `${API_URL}/api/download/${jobId}/${artifactType}`;
 }

@@ -28,23 +28,26 @@ export function DownloadsTab({
         {DOWNLOAD_ARTIFACTS.map((artifact) => (
           <div
             key={artifact.key}
-            className="flex items-center justify-between rounded-lg border bg-card p-4"
+            className="group flex items-center justify-between rounded-xl border bg-card p-4 card-elevated transition-all duration-200 hover:border-primary/20"
           >
             <div className="flex items-center gap-3">
-              {artifact.ext === "xlsx" ? (
-                <FileSpreadsheet className="h-5 w-5 text-success" />
-              ) : (
-                <FileText className="h-5 w-5 text-primary" />
-              )}
+              <div className="rounded-lg bg-primary/10 p-2">
+                {artifact.ext === "xlsx" ? (
+                  <FileSpreadsheet className="h-5 w-5 text-success" />
+                ) : (
+                  <FileText className="h-5 w-5 text-primary" />
+                )}
+              </div>
               <div>
                 <p className="text-sm font-medium text-foreground">{artifact.label}</p>
-                <p className="text-xs text-muted-foreground">.{artifact.ext}</p>
+                <p className="text-[11px] text-muted-foreground">.{artifact.ext}</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleDownload(artifact.key, artifact.ext)}
+              className="rounded-full opacity-60 transition-opacity group-hover:opacity-100"
             >
               <Download className="h-4 w-4" />
             </Button>

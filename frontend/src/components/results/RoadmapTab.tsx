@@ -9,7 +9,7 @@ function renderPhase(title: string, value: unknown): React.ReactNode {
     return (
       <div className="space-y-2">
         {value.map((item, i) => (
-          <div key={i} className="rounded-lg border bg-muted/30 p-3">
+          <div key={i} className="rounded-xl border bg-muted/20 p-3.5">
             {typeof item === "object" && item !== null ? (
               <div className="space-y-1">
                 {Object.entries(item as Record<string, unknown>).map(([k, v]) => (
@@ -32,7 +32,7 @@ function renderPhase(title: string, value: unknown): React.ReactNode {
       <div className="space-y-3">
         {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
           <div key={k}>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
               {k.replace(/_/g, " ")}
             </h4>
             {renderPhase(k, v)}
@@ -60,13 +60,13 @@ export function RoadmapTab({ data }: { data: Roadmap | null }) {
           <div key={key} className="relative pl-10">
             {/* Timeline dot */}
             <div
-              className={`absolute left-2.5 top-4 h-3 w-3 rounded-full border-2 ${
+              className={`absolute left-2.5 top-4 h-3 w-3 rounded-full border-2 transition-colors ${
                 i === 0
-                  ? "border-primary bg-primary"
+                  ? "border-primary bg-primary shadow-sm"
                   : "border-muted-foreground bg-background"
               }`}
             />
-            <div className="rounded-lg border bg-card p-6">
+            <div className="rounded-xl border bg-card p-6 card-elevated transition-all duration-200 hover:border-primary/20">
               <h3 className="text-base font-semibold text-foreground mb-3">
                 {key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
               </h3>

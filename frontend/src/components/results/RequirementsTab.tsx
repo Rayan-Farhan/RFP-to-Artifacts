@@ -4,18 +4,18 @@ import { Input } from "@/components/ui/input";
 import type { Requirement } from "@/lib/types";
 
 const PRIORITY_STYLES: Record<string, string> = {
-  "must-have": "bg-destructive/15 text-destructive",
-  "should-have": "bg-warning/15 text-warning",
-  "could-have": "bg-primary/15 text-primary",
+  "must-have": "bg-destructive/10 text-destructive",
+  "should-have": "bg-warning/10 text-warning",
+  "could-have": "bg-primary/10 text-primary",
   "wont-have": "bg-muted text-muted-foreground",
   "won't-have": "bg-muted text-muted-foreground",
 };
 
 const CATEGORY_STYLES: Record<string, string> = {
-  functional: "bg-primary/15 text-primary",
-  "non-functional": "bg-warning/15 text-warning",
-  constraint: "bg-destructive/15 text-destructive",
-  compliance: "bg-success/15 text-success",
+  functional: "bg-primary/10 text-primary",
+  "non-functional": "bg-warning/10 text-warning",
+  constraint: "bg-destructive/10 text-destructive",
+  compliance: "bg-success/10 text-success",
 };
 
 export function RequirementsTab({ requirements }: { requirements: Requirement[] }) {
@@ -40,14 +40,14 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
   const priorities = [...new Set(requirements.map((r) => r.priority))];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Stats */}
       <div className="flex flex-wrap gap-2 text-sm">
         <span className="text-muted-foreground">{requirements.length} total</span>
         {Object.entries(
           requirements.reduce((a, r) => { a[r.category] = (a[r.category] || 0) + 1; return a; }, {} as Record<string, number>)
         ).map(([cat, n]) => (
-          <span key={cat} className={`rounded-full px-2 py-0.5 text-xs ${CATEGORY_STYLES[cat] || "bg-muted text-muted-foreground"}`}>
+          <span key={cat} className={`rounded-full px-2 py-0.5 text-[11px] ${CATEGORY_STYLES[cat] || "bg-muted text-muted-foreground"}`}>
             {cat}: {n}
           </span>
         ))}
@@ -61,7 +61,7 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
             placeholder="Search requirements…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="rounded-lg pl-9"
           />
         </div>
         <div className="flex flex-wrap gap-1">
@@ -69,8 +69,8 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
             <button
               key={c}
               onClick={() => setCatFilter(catFilter === c ? null : c)}
-              className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-                catFilter === c ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground"
+              className={`rounded-full border px-2.5 py-0.5 text-xs transition-all ${
+                catFilter === c ? "border-primary bg-primary/10 text-primary shadow-sm" : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground"
               }`}
             >
               {c}
@@ -82,8 +82,8 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
             <button
               key={p}
               onClick={() => setPriFilter(priFilter === p ? null : p)}
-              className={`rounded-full border px-2.5 py-0.5 text-xs transition-colors ${
-                priFilter === p ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:text-foreground"
+              className={`rounded-full border px-2.5 py-0.5 text-xs transition-all ${
+                priFilter === p ? "border-primary bg-primary/10 text-primary shadow-sm" : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground"
               }`}
             >
               {p}
@@ -93,14 +93,14 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-xl border overflow-hidden card-elevated">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-muted/50">
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Title</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground hidden sm:table-cell">Category</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Priority</th>
+            <tr className="border-b bg-muted/40">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">ID</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Title</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden sm:table-cell">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Priority</th>
             </tr>
           </thead>
           <tbody>
@@ -114,16 +114,16 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{r.id}</td>
                   <td className="px-4 py-3 text-foreground">{r.title}</td>
                   <td className="px-4 py-3 hidden sm:table-cell">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${CATEGORY_STYLES[r.category] || ""}`}>{r.category}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] ${CATEGORY_STYLES[r.category] || ""}`}>{r.category}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${PRIORITY_STYLES[r.priority] || ""}`}>{r.priority}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-[11px] ${PRIORITY_STYLES[r.priority] || ""}`}>{r.priority}</span>
                   </td>
                 </tr>
                 {expanded === r.id && (
-                  <tr key={`${r.id}-detail`} className="border-b bg-muted/20">
-                    <td colSpan={4} className="px-4 py-3">
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{r.description}</p>
+                  <tr key={`${r.id}-detail`} className="border-b bg-accent/30">
+                    <td colSpan={4} className="px-4 py-4">
+                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{r.description}</p>
                       {r.source_section && (
                         <p className="mt-2 text-xs text-muted-foreground">Source: {r.source_section}</p>
                       )}
@@ -134,7 +134,7 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={4} className="px-4 py-10 text-center text-sm text-muted-foreground">
                   No requirements match your filters.
                 </td>
               </tr>

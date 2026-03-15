@@ -5,7 +5,7 @@ function renderBlock(title: string, value: unknown): React.ReactNode {
   if (typeof value === "string") {
     return (
       <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</h4>
+        <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{title}</h4>
         <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{value}</p>
       </div>
     );
@@ -13,10 +13,10 @@ function renderBlock(title: string, value: unknown): React.ReactNode {
   if (Array.isArray(value)) {
     return (
       <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{title}</h4>
+        <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{title}</h4>
         <div className="space-y-2">
           {value.map((item, i) => (
-            <div key={i} className="rounded-lg border bg-muted/30 p-3">
+            <div key={i} className="rounded-xl border bg-muted/20 p-3.5">
               {typeof item === "object" && item !== null ? (
                 <div className="space-y-1">
                   {Object.entries(item as Record<string, unknown>).map(([k, v]) => (
@@ -38,8 +38,8 @@ function renderBlock(title: string, value: unknown): React.ReactNode {
   if (typeof value === "object") {
     return (
       <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{title}</h4>
-        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+        <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">{title}</h4>
+        <div className="rounded-xl border bg-muted/20 p-4 space-y-3">
           {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
             <div key={k}>{renderBlock(k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()), v)}</div>
           ))}
@@ -49,7 +49,7 @@ function renderBlock(title: string, value: unknown): React.ReactNode {
   }
   return (
     <div>
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</h4>
+      <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">{title}</h4>
       <p className="text-sm text-foreground">{String(value)}</p>
     </div>
   );
@@ -61,9 +61,9 @@ export function SuccessMetricsTab({ data }: { data: SuccessMetrics | null }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-4">
       {Object.entries(data).map(([key, value]) => (
-        <div key={key} className="rounded-lg border bg-card p-6">
+        <div key={key} className="rounded-xl border bg-card p-6 card-elevated">
           {renderBlock(key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()), value)}
         </div>
       ))}

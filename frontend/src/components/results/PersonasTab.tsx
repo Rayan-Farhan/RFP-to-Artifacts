@@ -3,9 +3,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import type { UserPersona, InterviewQuestion } from "@/lib/types";
 
 const CATEGORY_COLORS: Record<string, string> = {
-  discovery: "bg-primary/15 text-primary",
-  validation: "bg-success/15 text-success",
-  prioritization: "bg-warning/15 text-warning",
+  discovery: "bg-primary/10 text-primary",
+  validation: "bg-success/10 text-success",
+  prioritization: "bg-warning/10 text-warning",
 };
 
 export function PersonasTab({ personas, questions }: { personas: UserPersona[]; questions: InterviewQuestion[] }) {
@@ -22,17 +22,17 @@ export function PersonasTab({ personas, questions }: { personas: UserPersona[]; 
     <div className="space-y-10">
       {/* Persona Cards */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-foreground">User Personas</h2>
+        <h2 className="mb-5 text-lg font-semibold text-foreground">User Personas</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {personas.map((p, i) => (
-            <div key={i} className="rounded-lg border bg-card p-6">
+            <div key={i} className="rounded-xl border bg-card p-6 card-elevated transition-all duration-200 hover:border-primary/20">
               <h3 className="text-lg font-bold text-foreground">{p.name}</h3>
-              <p className="text-sm text-primary">{p.role}</p>
+              <p className="text-sm font-medium text-primary">{p.role}</p>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{p.context}</p>
 
-              <div className="mt-4">
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Goals</h4>
-                <ul className="space-y-1">
+              <div className="mt-5">
+                <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Goals</h4>
+                <ul className="space-y-1.5">
                   {p.goals.map((g, j) => (
                     <li key={j} className="flex items-start gap-2 text-sm text-foreground">
                       <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
@@ -42,9 +42,9 @@ export function PersonasTab({ personas, questions }: { personas: UserPersona[]; 
                 </ul>
               </div>
 
-              <div className="mt-4">
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pain Points</h4>
-                <ul className="space-y-1">
+              <div className="mt-5">
+                <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Pain Points</h4>
+                <ul className="space-y-1.5">
                   {p.pain_points.map((pp, j) => (
                     <li key={j} className="flex items-start gap-2 text-sm text-foreground">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />
@@ -61,10 +61,10 @@ export function PersonasTab({ personas, questions }: { personas: UserPersona[]; 
       {/* Interview Questions */}
       {questions.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-foreground">Interview Questions</h2>
+          <h2 className="mb-5 text-lg font-semibold text-foreground">Interview Questions</h2>
           <Accordion type="multiple" className="space-y-2">
             {Object.entries(grouped).map(([category, qs]) => (
-              <AccordionItem key={category} value={category} className="rounded-lg border bg-card px-4">
+              <AccordionItem key={category} value={category} className="rounded-xl border bg-card px-5">
                 <AccordionTrigger className="text-sm font-medium text-foreground capitalize hover:no-underline">
                   {category} ({qs.length})
                 </AccordionTrigger>
@@ -73,14 +73,14 @@ export function PersonasTab({ personas, questions }: { personas: UserPersona[]; 
                     {qs.map((q, i) => (
                       <div key={i}>
                         <p className="text-sm font-medium text-foreground">{q.question}</p>
-                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
                           {q.target_persona && (
-                            <span className={`rounded-full px-2 py-0.5 text-xs ${CATEGORY_COLORS[q.category] || "bg-muted text-muted-foreground"}`}>
+                            <span className={`rounded-full px-2 py-0.5 text-[11px] ${CATEGORY_COLORS[q.category] || "bg-muted text-muted-foreground"}`}>
                               {q.target_persona}
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">{q.rationale}</p>
+                        <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{q.rationale}</p>
                       </div>
                     ))}
                   </div>
