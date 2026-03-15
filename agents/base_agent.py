@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -88,8 +89,53 @@ def _remove_trailing_commas(text: str) -> str:
     curr = text
     while prev != curr:
         prev = curr
-        curr = curr.replace(",\n}", "\n}").replace(",\n]", "\n]").replace(",}", "}").replace(",]", "]")
+        curr = re.sub(r",\s*([}\]])", r"\1", curr)
     return curr
+
+
+def _fix_single_quotes(text: str) -> str:
+    """Replace single-quoted JSON keys/values with double quotes.
+
+    Only applied when the text looks like it uses single quotes for JSON
+    strings (a common LLM mistake).  This is a heuristic — it replaces
+    single quotes that appear in key/value positions while leaving
+    apostrophes inside words (e.g. "don't") alone.
+    """
+    # Quick check: if the text already parses or has no single quotes, skip
+    if "'" not in text:
+        return text
+
+    out: list[str] = []
+    i = 0
+    in_double = False
+    while i < len(text):
+        ch = text[i]
+
+        # Track double-quoted regions to leave them untouched
+        if ch == '"' and (i == 0 or text[i - 1] != "\\"):
+            in_double = not in_double
+            out.append(ch)
+            i += 1
+            continue
+
+        if in_double:
+            out.append(ch)
+            i += 1
+            continue
+
+        if ch == "'":
+            # Heuristic: if the char before and after are both word characters,
+            # it's likely a contraction (e.g. don't) — keep as-is.
+            prev_is_word = i > 0 and text[i - 1].isalpha()
+            next_is_word = i + 1 < len(text) and text[i + 1].isalpha()
+            if prev_is_word and next_is_word:
+                out.append("'")
+            else:
+                out.append('"')
+        else:
+            out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 class BaseAgent(ABC):
@@ -180,37 +226,68 @@ class BaseAgent(ABC):
         return response_content
 
     async def invoke_json(self, user_message: str) -> dict:
-        """Invoke the SK agent and parse the response as JSON."""
+        """Invoke the SK agent and parse the response as JSON, with repair and retry."""
         raw = await self.invoke(user_message)
+        parsed = self._try_parse_json(raw)
+        if parsed is not None:
+            return parsed
+
+        # All local repairs failed — retry the LLM once with a strict correction prompt.
+        logger.warning("[%s] JSON parse failed on first attempt, retrying with correction prompt.", self.name)
+        retry_prompt = (
+            "Your previous response was not valid JSON. "
+            "Return ONLY a single valid JSON object — no markdown fences, no prose, "
+            "no trailing commas, and use double quotes for all keys and string values. "
+            "Here is the malformed output to fix:\n\n" + raw[:4000]
+        )
+        raw_retry = await self.invoke(retry_prompt)
+        parsed = self._try_parse_json(raw_retry)
+        if parsed is not None:
+            return parsed
+
+        logger.error("[%s] Failed to parse JSON after retry. Snippet: %s", self.name, raw_retry[:600])
+        raise ValueError(f"{self.name} returned invalid JSON after retry")
+
+    def _try_parse_json(self, raw: str) -> dict | None:
+        """Attempt to parse raw LLM output as JSON, applying progressive repairs."""
+        text = raw.strip()
 
         # Strip markdown code fences if present
-        text = raw.strip()
         if text.startswith("```"):
             lines = text.split("\n")
-            # Remove first line (```json) and last line (```)
             lines = [l for l in lines if not l.strip().startswith("```")]
             text = "\n".join(lines)
 
         text = _extract_outer_json_object(text.strip())
 
+        # Attempt 1: raw text
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
 
-        # Repair common LLM JSON issues and retry.
+        # Attempt 2: escape control chars
         repaired = _escape_control_chars_in_json_strings(text)
         try:
             return json.loads(repaired)
         except json.JSONDecodeError:
             pass
 
+        # Attempt 3: remove trailing commas
         repaired = _remove_trailing_commas(repaired)
         try:
             return json.loads(repaired)
-        except json.JSONDecodeError as e:
-            logger.error("[%s] Failed to parse JSON response. Snippet: %s", self.name, repaired[:600])
-            raise ValueError(f"{self.name} returned invalid JSON: {e}") from e
+        except json.JSONDecodeError:
+            pass
+
+        # Attempt 4: fix single quotes
+        repaired = _fix_single_quotes(repaired)
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError:
+            pass
+
+        return None
 
     async def save_memory(self, data: dict) -> None:
         """Persist agent memory to Cosmos DB."""
