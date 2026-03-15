@@ -13,6 +13,8 @@
 
 ### [Click here to access the live app on Azure](https://mango-plant-0f448b800.1.azurestaticapps.net)
 
+### [Click here to view the demo of the app]([https://mango-plant-0f448b800.1.azurestaticapps.net](https://drive.google.com/file/d/1CBZ7nzTorOZOfwrsy8L8QMsM7HH7R7ux/view?usp=sharing))
+
 ---
 
 ## Demo
