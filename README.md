@@ -11,10 +11,21 @@
 [![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+### [Live Demo](https://mango-plant-0f448b800.1.azurestaticapps.net) | [Watch Demo Video](#demo)
+
+---
+
+## Demo
+
+https://github.com/user-attachments/assets/demo.mp4
+
+<video src="demo.mp4" controls width="100%"></video>
+
 ---
 
 ## Table of Contents
 
+- [Demo](#demo)
 - [The Problem](#the-problem)
 - [Our Solution](#our-solution)
 - [Architecture](#architecture)
