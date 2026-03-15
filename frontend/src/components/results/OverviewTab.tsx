@@ -24,7 +24,7 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8">
       {/* Key Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard

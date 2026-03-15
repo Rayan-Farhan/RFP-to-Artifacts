@@ -22,7 +22,7 @@ export function ParsedRFPTab({ parsedRfp }: { parsedRfp: ParsedRFP | null }) {
   const { metadata, sections } = parsedRfp;
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8">
       {/* Metadata */}
       <div>
         <h2 className="mb-5 text-lg font-semibold text-foreground">Metadata</h2>

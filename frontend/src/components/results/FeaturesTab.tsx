@@ -30,7 +30,7 @@ export function FeaturesTab({ features }: { features: Feature[] }) {
 
   if (view === "kanban") {
     return (
-      <div className="space-y-4">
+      <div className="mx-auto max-w-5xl space-y-4">
         <div className="flex justify-end">
           <Button variant="ghost" size="sm" onClick={() => setView("table")} className="gap-1.5 rounded-lg">
             <Table2 className="h-4 w-4" /> Table
@@ -102,7 +102,7 @@ export function FeaturesTab({ features }: { features: Feature[] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-5xl space-y-4">
       <div className="flex justify-end">
         <Button variant="ghost" size="sm" onClick={() => setView("kanban")} className="gap-1.5 rounded-lg">
           <LayoutGrid className="h-4 w-4" /> Kanban

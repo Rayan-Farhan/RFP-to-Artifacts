@@ -39,7 +39,7 @@ export function EvaluationTab({ evaluation: initialEval, jobId }: { evaluation: 
   const isOffline = evaluation.evaluation_source === "offline_heuristic";
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8">
       {/* Source & Overall */}
       <div className="flex flex-col items-center gap-6 rounded-xl border bg-card p-6 card-elevated sm:flex-row sm:items-start sm:gap-10">
         <ScoreGauge score={evaluation.overall_score ?? 0} size={140} label="Overall Score" />

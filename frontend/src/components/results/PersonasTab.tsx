@@ -19,7 +19,7 @@ export function PersonasTab({ personas, questions }: { personas: UserPersona[]; 
   );
 
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-5xl space-y-10">
       {/* Persona Cards */}
       <div>
         <h2 className="mb-5 text-lg font-semibold text-foreground">User Personas</h2>

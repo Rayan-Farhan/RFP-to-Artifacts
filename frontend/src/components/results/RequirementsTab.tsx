@@ -40,7 +40,7 @@ export function RequirementsTab({ requirements }: { requirements: Requirement[] 
   const priorities = [...new Set(requirements.map((r) => r.priority))];
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto max-w-5xl space-y-5">
       {/* Stats */}
       <div className="flex flex-wrap gap-2 text-sm">
         <span className="text-muted-foreground">{requirements.length} total</span>
