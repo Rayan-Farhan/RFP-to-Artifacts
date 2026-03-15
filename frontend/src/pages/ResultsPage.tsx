@@ -34,7 +34,7 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="container max-w-7xl py-12">
+      <div className="mx-auto w-full max-w-5xl px-6 py-12">
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div
@@ -50,7 +50,7 @@ export default function ResultsPage() {
 
   if (error || !artifacts) {
     return (
-      <div className="container flex min-h-[60vh] flex-col items-center justify-center gap-4">
+      <div className="mx-auto flex min-h-[60vh] w-full max-w-5xl flex-col items-center justify-center gap-4 px-6">
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
           <p className="text-sm text-destructive">Failed to load artifacts. Job may still be processing.</p>
           <Button variant="outline" onClick={() => navigate(`/job/${jobId}`)} className="mt-4 rounded-lg">
@@ -78,7 +78,7 @@ export default function ResultsPage() {
   ];
 
   return (
-    <div className="container max-w-7xl py-6 sm:py-8">
+    <div className="mx-auto w-full max-w-5xl px-6 py-6 sm:py-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Top bar */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -101,7 +101,7 @@ export default function ResultsPage() {
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-            <TabsList className="mb-8 inline-flex w-max gap-1 bg-transparent p-0 sm:flex sm:w-full sm:flex-wrap sm:justify-start">
+            <TabsList className="mb-8 inline-flex w-max gap-1 bg-transparent p-0 sm:flex sm:w-full sm:flex-wrap sm:justify-center">
               {TABS.map((tab) => (
                 <TabsTrigger
                   key={tab}

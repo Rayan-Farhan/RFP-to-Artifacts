@@ -72,7 +72,7 @@ export default function UploadPage() {
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
           Transform RFPs into
           <br />
-          <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent [-webkit-background-clip:text]">
             Product Strategy
           </span>
         </h1>
@@ -127,7 +127,7 @@ export default function UploadPage() {
                     </label>
                   </p>
                 </div>
-                <p className="text-xs text-muted-foreground/80">
+                <p className="text-xs text-muted-foreground">
                   PDF, DOCX, DOC, TXT • Max 50MB
                 </p>
               </motion.div>

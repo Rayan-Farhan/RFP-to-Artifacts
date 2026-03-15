@@ -33,7 +33,6 @@ function AgentCard({
   status,
   message,
   duration,
-  tokens,
 }: {
   name: string;
   icon: string;
@@ -41,7 +40,6 @@ function AgentCard({
   status: AgentStatus;
   message?: string;
   duration?: number | null;
-  tokens?: number | null;
 }) {
   return (
     <div
@@ -85,14 +83,9 @@ function AgentCard({
           <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
             {status === "running" ? message || description : description}
           </p>
-          {status === "completed" && (duration || tokens) && (
+          {status === "completed" && duration != null && (
             <div className="mt-2 flex gap-3 text-[11px] text-muted-foreground">
-              {duration != null && (
-                <span className="rounded-md bg-muted px-1.5 py-0.5">{duration.toFixed(1)}s</span>
-              )}
-              {tokens != null && (
-                <span className="rounded-md bg-muted px-1.5 py-0.5">{tokens.toLocaleString()} tokens</span>
-              )}
+              <span className="rounded-md bg-muted px-1.5 py-0.5">{duration.toFixed(1)}s</span>
             </div>
           )}
           {status === "failed" && message && (
@@ -151,7 +144,7 @@ export default function PipelinePage() {
   };
 
   return (
-    <div className="container max-w-4xl py-8 sm:py-10">
+    <div className="mx-auto w-full max-w-4xl px-6 py-8 sm:py-10">
       {/* Job info bar */}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-5 card-elevated">
         <div className="flex items-center gap-3">
@@ -257,7 +250,6 @@ export default function PipelinePage() {
                       status={info.status}
                       message={info.msg}
                       duration={info.dur}
-                      tokens={info.tok}
                     />
                   );
                 })}
