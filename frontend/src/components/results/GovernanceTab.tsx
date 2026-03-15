@@ -3,22 +3,33 @@ import { ScoreGauge } from "@/components/shared/ScoreGauge";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import type { GovernanceReport } from "@/lib/types";
 
+/** Normalize a status string to lowercase "pass" | "warning" | "fail" | "pending" */
+function normalizeStatus(s: unknown): "pass" | "warning" | "fail" | "pending" {
+  const lower = String(s ?? "").toLowerCase();
+  if (lower === "pass" || lower === "warning" || lower === "fail") return lower;
+  return "pending";
+}
+
 export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
   if (!report) return <p className="text-muted-foreground">No governance report available.</p>;
 
-  const checks = report.checks ?? [];
-  const missingInfo = report.missing_information ?? [];
-  const contradictions = report.contradictions ?? [];
-  const riskFlags = report.risk_flags ?? [];
+  // Defensively coerce top-level fields — LLMs sometimes return numbers as strings
+  const overallScore = Number(report.overall_score ?? 0) || 0;
+  const overallStatus = normalizeStatus(report.status);
+
+  const checks = Array.isArray(report.checks) ? report.checks : [];
+  const missingInfo = Array.isArray(report.missing_information) ? report.missing_information : [];
+  const contradictions = Array.isArray(report.contradictions) ? report.contradictions : [];
+  const riskFlags = Array.isArray(report.risk_flags) ? report.risk_flags : [];
 
   return (
     <div className="space-y-8">
       {/* Top */}
       <div className="flex flex-col items-center gap-4 rounded-lg border bg-card p-6 sm:flex-row sm:items-start sm:gap-8">
-        <ScoreGauge score={report.overall_score ?? 0} size={140} label="Overall Score" status={report.status} />
+        <ScoreGauge score={overallScore} size={140} label="Overall Score" status={overallStatus} />
         <div className="flex-1">
           <div className="mb-2">
-            <StatusBadge status={report.status ?? "pending"} />
+            <StatusBadge status={overallStatus} />
           </div>
           <p className="text-sm text-foreground leading-relaxed">{report.summary ?? ""}</p>
         </div>
@@ -29,27 +40,30 @@ export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
       <div>
         <h2 className="mb-4 text-lg font-semibold text-foreground">Quality Checks</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {checks.map((check, i) => (
+          {checks.map((check, i) => {
+            const checkScore = Number(check?.score ?? 0) || 0;
+            const checkStatus = normalizeStatus(check?.status);
+            return (
             <div key={i} className="rounded-lg border bg-card p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium text-foreground">{check.check_name}</h3>
-                <StatusBadge status={check.status} />
+                <StatusBadge status={checkStatus} />
               </div>
               <div className="mb-3">
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                   <span>Score</span>
-                  <span>{check.score}/10</span>
+                  <span>{checkScore}/10</span>
                 </div>
                 <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all ${
-                      check.status === "pass"
+                      checkStatus === "pass"
                         ? "bg-success"
-                        : check.status === "warning"
+                        : checkStatus === "warning"
                         ? "bg-warning"
                         : "bg-destructive"
                     }`}
-                    style={{ width: `${(check.score / 10) * 100}%` }}
+                    style={{ width: `${(checkScore / 10) * 100}%` }}
                   />
                 </div>
               </div>
@@ -62,7 +76,8 @@ export function GovernanceTab({ report }: { report: GovernanceReport | null }) {
                 </ul>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       )}

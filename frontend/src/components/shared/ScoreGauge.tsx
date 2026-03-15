@@ -22,11 +22,13 @@ function getAutoStatus(score: number, max: number): "pass" | "warning" | "fail" 
 }
 
 export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: ScoreGaugeProps) {
-  const resolvedStatus = status || getAutoStatus(score, maxScore);
-  const color = statusColor[resolvedStatus];
+  // Coerce to number — LLMs sometimes return numeric strings (e.g. "8.5" instead of 8.5)
+  const numericScore = Number(score) || 0;
+  const resolvedStatus = status || getAutoStatus(numericScore, maxScore);
+  const color = statusColor[resolvedStatus] ?? statusColor.fail;
   const radius = (size - 12) / 2;
   const circumference = 2 * Math.PI * radius;
-  const pct = Math.min(score / maxScore, 1);
+  const pct = Math.min(numericScore / maxScore, 1);
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -55,7 +57,7 @@ export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: 
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-foreground">{score.toFixed(1)}</span>
+          <span className="text-2xl font-bold text-foreground">{numericScore.toFixed(1)}</span>
         </div>
       </div>
       {label && <span className="text-sm text-muted-foreground">{label}</span>}
