@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useArtifacts } from "@/hooks/useArtifacts";
@@ -17,8 +17,6 @@ import { SOWTab } from "@/components/results/SOWTab";
 import { GovernanceTab } from "@/components/results/GovernanceTab";
 import { EvaluationTab } from "@/components/results/EvaluationTab";
 import { DownloadsTab } from "@/components/results/DownloadsTab";
-import { getDownloadUrl } from "@/lib/api";
-import { DOWNLOAD_ARTIFACTS } from "@/lib/types";
 
 export default function ResultsPage() {
   const { jobId } = useParams<{ jobId: string }>();
@@ -57,18 +55,6 @@ export default function ResultsPage() {
     );
   }
 
-  const handleDownloadAll = () => {
-    DOWNLOAD_ARTIFACTS.forEach((a) => {
-      const url = getDownloadUrl(jobId!, a.key);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${a.key}.${a.ext}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-  };
-
   const TABS = [
     "Overview",
     "Parsed RFP",
@@ -99,10 +85,6 @@ export default function ResultsPage() {
               <p className="text-sm text-muted-foreground">Job {jobId?.slice(0, 8)}…</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleDownloadAll} className="gap-1.5">
-            <Download className="h-4 w-4" />
-            Download All
-          </Button>
         </div>
 
         {/* Tabs */}

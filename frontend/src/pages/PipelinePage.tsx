@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FileText, ListChecks, Kanban, Users, FileSignature, ShieldCheck,
-  Check, X, Loader2, ArrowRight, Target, TrendingUp, BarChart3, Map
+  Check, X, Loader2, ArrowRight, Target, TrendingUp, BarChart3, Map, Ban
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useJobStatus } from "@/hooks/useJobStatus";
+import { cancelJob } from "@/lib/api";
 import { ORCHESTRATION_PIPELINE, type AgentStatus } from "@/lib/types";
+import { toast } from "sonner";
 
 const ICONS: Record<string, React.ReactNode> = {
   FileText: <FileText className="h-5 w-5" />,
@@ -111,9 +113,25 @@ export default function PipelinePage() {
   const { logs, connected } = useWebSocket(jobId);
   const { data: job } = useJobStatus(jobId, true);
   const [elapsed, setElapsed] = useState(0);
+  const [cancelling, setCancelling] = useState(false);
 
   const allLogs = job?.agent_logs && job.agent_logs.length > logs.length ? job.agent_logs : logs;
   const status = job?.status;
+
+  const isRunning = status !== "completed" && status !== "failed";
+
+  const handleCancel = async () => {
+    if (!jobId || cancelling) return;
+    setCancelling(true);
+    try {
+      await cancelJob(jobId);
+      toast.success("Pipeline cancelled");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to cancel");
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   useEffect(() => {
     if (status === "completed" || status === "failed") return;
@@ -149,6 +167,22 @@ export default function PipelinePage() {
           <span className="text-sm tabular-nums text-muted-foreground">
             {Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, "0")}
           </span>
+          {isRunning && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="gap-1.5"
+            >
+              {cancelling ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Ban className="h-3.5 w-3.5" />
+              )}
+              Cancel
+            </Button>
+          )}
         </div>
       </div>
 
