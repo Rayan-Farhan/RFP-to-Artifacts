@@ -29,7 +29,7 @@ export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: 
   const pct = Math.min(score / maxScore, 1);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-2.5">
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="-rotate-90">
           <circle
@@ -38,7 +38,7 @@ export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: 
             r={radius}
             fill="none"
             stroke="hsl(var(--muted))"
-            strokeWidth={6}
+            strokeWidth={5}
           />
           <motion.circle
             cx={size / 2}
@@ -46,7 +46,7 @@ export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: 
             r={radius}
             fill="none"
             stroke={color}
-            strokeWidth={6}
+            strokeWidth={5}
             strokeLinecap="round"
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
@@ -54,11 +54,12 @@ export function ScoreGauge({ score, maxScore = 10, size = 120, label, status }: 
             transition={{ duration: 1.2, ease: "easeOut" }}
           />
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold text-foreground">{score.toFixed(1)}</span>
+          <span className="text-[10px] text-muted-foreground">/ {maxScore}</span>
         </div>
       </div>
-      {label && <span className="text-sm text-muted-foreground">{label}</span>}
+      {label && <span className="text-xs font-medium text-muted-foreground">{label}</span>}
     </div>
   );
 }

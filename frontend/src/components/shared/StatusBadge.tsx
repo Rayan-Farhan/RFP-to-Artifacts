@@ -7,15 +7,27 @@ interface StatusBadgeProps {
 }
 
 const statusStyles: Record<string, string> = {
-  pass: "bg-success/15 text-success border-success/30",
-  completed: "bg-success/15 text-success border-success/30",
-  warning: "bg-warning/15 text-warning border-warning/30",
-  processing: "bg-primary/15 text-primary border-primary/30",
-  running: "bg-primary/15 text-primary border-primary/30",
+  pass: "bg-success/10 text-success border-success/25",
+  completed: "bg-success/10 text-success border-success/25",
+  warning: "bg-warning/10 text-warning border-warning/25",
+  processing: "bg-primary/10 text-primary border-primary/25",
+  running: "bg-primary/10 text-primary border-primary/25",
   pending: "bg-muted text-muted-foreground border-border",
   idle: "bg-muted text-muted-foreground border-border",
-  fail: "bg-destructive/15 text-destructive border-destructive/30",
-  failed: "bg-destructive/15 text-destructive border-destructive/30",
+  fail: "bg-destructive/10 text-destructive border-destructive/25",
+  failed: "bg-destructive/10 text-destructive border-destructive/25",
+};
+
+const statusDot: Record<string, string> = {
+  pass: "bg-success",
+  completed: "bg-success",
+  warning: "bg-warning",
+  processing: "bg-primary animate-pulse",
+  running: "bg-primary animate-pulse",
+  pending: "bg-muted-foreground",
+  idle: "bg-muted-foreground",
+  fail: "bg-destructive",
+  failed: "bg-destructive",
 };
 
 const statusLabels: Record<string, string> = {
@@ -34,11 +46,12 @@ export function StatusBadge({ status, label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold",
         statusStyles[status],
         className
       )}
     >
+      <span className={cn("h-1.5 w-1.5 rounded-full", statusDot[status])} />
       {label || statusLabels[status]}
     </span>
   );

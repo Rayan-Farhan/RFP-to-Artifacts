@@ -45,25 +45,25 @@ function AgentCard({
 }) {
   return (
     <div
-      className={`relative rounded-lg border p-4 transition-all ${
+      className={`relative rounded-xl border p-4 transition-all duration-200 ${
         status === "running"
           ? "border-primary glow-primary bg-primary/5"
           : status === "completed"
-          ? "border-success/50 bg-success/5"
+          ? "border-success/40 bg-success/5 card-elevated"
           : status === "failed"
-          ? "border-destructive/50 bg-destructive/5"
-          : "border-border bg-card opacity-50"
+          ? "border-destructive/40 bg-destructive/5"
+          : "border-border bg-card opacity-60"
       }`}
     >
       <div className="flex items-start gap-3">
         <div
-          className={`mt-0.5 rounded-lg p-2 ${
+          className={`mt-0.5 rounded-lg p-2 transition-colors ${
             status === "running"
-              ? "bg-primary/20 text-primary"
+              ? "bg-primary/15 text-primary"
               : status === "completed"
-              ? "bg-success/20 text-success"
+              ? "bg-success/15 text-success"
               : status === "failed"
-              ? "bg-destructive/20 text-destructive"
+              ? "bg-destructive/15 text-destructive"
               : "bg-muted text-muted-foreground"
           }`}
         >
@@ -82,13 +82,17 @@ function AgentCard({
             <h3 className="text-sm font-semibold text-foreground">{name}</h3>
             <StatusBadge status={status} />
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
             {status === "running" ? message || description : description}
           </p>
           {status === "completed" && (duration || tokens) && (
-            <div className="mt-1.5 flex gap-3 text-xs text-muted-foreground">
-              {duration != null && <span>{duration.toFixed(1)}s</span>}
-              {tokens != null && <span>{tokens.toLocaleString()} tokens</span>}
+            <div className="mt-2 flex gap-3 text-[11px] text-muted-foreground">
+              {duration != null && (
+                <span className="rounded-md bg-muted px-1.5 py-0.5">{duration.toFixed(1)}s</span>
+              )}
+              {tokens != null && (
+                <span className="rounded-md bg-muted px-1.5 py-0.5">{tokens.toLocaleString()} tokens</span>
+              )}
             </div>
           )}
           {status === "failed" && message && (
@@ -98,7 +102,7 @@ function AgentCard({
       </div>
       {status === "running" && (
         <motion.div
-          className="absolute inset-0 rounded-lg border-2 border-primary"
+          className="absolute inset-0 rounded-xl border-2 border-primary"
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
@@ -147,13 +151,15 @@ export default function PipelinePage() {
   };
 
   return (
-    <div className="container max-w-4xl py-8">
+    <div className="container max-w-4xl py-8 sm:py-10">
       {/* Job info bar */}
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-4">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-5 card-elevated">
         <div className="flex items-center gap-3">
-          <FileText className="h-5 w-5 text-muted-foreground" />
+          <div className="rounded-lg bg-primary/10 p-2">
+            <FileText className="h-5 w-5 text-primary" />
+          </div>
           <div>
-            <p className="font-medium text-foreground">{job?.filename || "Processing…"}</p>
+            <p className="font-semibold text-foreground">{job?.filename || "Processing…"}</p>
             <p className="text-xs text-muted-foreground">
               {jobId?.slice(0, 8)}… • {new Date().toLocaleTimeString()}
             </p>
@@ -162,9 +168,9 @@ export default function PipelinePage() {
         <div className="flex items-center gap-3">
           {status && <StatusBadge status={status} />}
           {!connected && status !== "completed" && status !== "failed" && (
-            <span className="text-xs text-warning">Polling mode</span>
+            <span className="rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">Polling mode</span>
           )}
-          <span className="text-sm tabular-nums text-muted-foreground">
+          <span className="rounded-md bg-muted px-2 py-1 text-sm tabular-nums text-muted-foreground">
             {Math.floor(elapsed / 60)}:{(elapsed % 60).toString().padStart(2, "0")}
           </span>
           {isRunning && (
@@ -173,7 +179,7 @@ export default function PipelinePage() {
               size="sm"
               onClick={handleCancel}
               disabled={cancelling}
-              className="gap-1.5"
+              className="gap-1.5 rounded-lg"
             >
               {cancelling ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -204,11 +210,11 @@ export default function PipelinePage() {
               {/* Stage header */}
               <div className="mb-3 flex items-center gap-3">
                 <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${
                     stageCompleted
-                      ? "bg-success text-success-foreground"
+                      ? "bg-success text-success-foreground shadow-sm"
                       : stageRunning
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
                       : stageFailed
                       ? "bg-destructive text-destructive-foreground"
                       : "bg-muted text-muted-foreground"
@@ -221,7 +227,7 @@ export default function PipelinePage() {
                     Stage {stage.stage}: {stage.title}
                   </h2>
                   {stage.parallel && (
-                    <span className="text-xs text-muted-foreground">Parallel execution</span>
+                    <span className="text-[11px] text-muted-foreground">Parallel execution</span>
                   )}
                 </div>
               </div>
@@ -261,8 +267,8 @@ export default function PipelinePage() {
               {si < ORCHESTRATION_PIPELINE.length - 1 && (
                 <div className="flex justify-center py-2">
                   <div
-                    className={`h-6 w-0.5 ${
-                      stageCompleted ? "bg-success/50" : "bg-border"
+                    className={`h-6 w-0.5 rounded-full transition-colors ${
+                      stageCompleted ? "bg-success/40" : "bg-border"
                     }`}
                   />
                 </div>
@@ -277,9 +283,13 @@ export default function PipelinePage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 flex justify-center"
+          className="mt-10 flex justify-center"
         >
-          <Button size="lg" onClick={() => navigate(`/job/${jobId}/results`)} className="gap-2">
+          <Button
+            size="lg"
+            onClick={() => navigate(`/job/${jobId}/results`)}
+            className="gap-2 rounded-xl px-8 shadow-md transition-shadow hover:shadow-lg"
+          >
             View Results <ArrowRight className="h-4 w-4" />
           </Button>
         </motion.div>
@@ -289,10 +299,10 @@ export default function PipelinePage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 space-y-3 text-center"
+          className="mt-10 flex flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center"
         >
-          <p className="text-destructive">{job?.error || "Processing failed"}</p>
-          <Button variant="outline" onClick={() => navigate("/")}>
+          <p className="text-sm text-destructive">{job?.error || "Processing failed"}</p>
+          <Button variant="outline" onClick={() => navigate("/")} className="rounded-lg">
             Try Again
           </Button>
         </motion.div>

@@ -24,7 +24,7 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Key Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
@@ -34,7 +34,7 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
         >
           <div className="flex flex-wrap gap-1">
             {Object.entries(reqByCategory).map(([cat, count]) => (
-              <span key={cat} className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              <span key={cat} className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
                 {cat}: {count}
               </span>
             ))}
@@ -50,13 +50,13 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
             {Object.entries(featByPriority).map(([p, count]) => (
               <span
                 key={p}
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
                   p === "P0"
-                    ? "bg-destructive/15 text-destructive"
+                    ? "bg-destructive/10 text-destructive"
                     : p === "P1"
-                    ? "bg-warning/15 text-warning"
+                    ? "bg-warning/10 text-warning"
                     : p === "P2"
-                    ? "bg-primary/15 text-primary"
+                    ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -83,7 +83,7 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
       {/* Scores */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {governance_report && (
-          <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6">
+          <div className="flex flex-col items-center gap-4 rounded-xl border bg-card p-6 card-elevated">
             <ScoreGauge
               score={governance_report.overall_score}
               label="Governance Score"
@@ -94,41 +94,45 @@ export function OverviewTab({ artifacts }: { artifacts: ArtifactsPayload }) {
         )}
 
         {foundry_evaluation && (
-          <div className="flex flex-col items-center gap-3 rounded-lg border bg-card p-6">
+          <div className="flex flex-col items-center gap-4 rounded-xl border bg-card p-6 card-elevated">
             <ScoreGauge score={foundry_evaluation.overall_score} label="AI Evaluation" />
-            <span className="text-xs text-muted-foreground">{foundry_evaluation.evaluation_source.replace("_", " ")}</span>
+            <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+              {foundry_evaluation.evaluation_source.replace("_", " ")}
+            </span>
           </div>
         )}
 
         {parsed_rfp?.metadata && (
-          <div className="rounded-lg border bg-card p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              <h3 className="text-sm font-medium text-foreground">RFP Metadata</h3>
+          <div className="rounded-xl border bg-card p-6 card-elevated">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="rounded-lg bg-primary/10 p-1.5">
+                <BarChart3 className="h-4 w-4 text-primary" />
+              </div>
+              <h3 className="text-sm font-semibold text-foreground">RFP Metadata</h3>
             </div>
-            <dl className="space-y-2 text-sm">
+            <dl className="space-y-3 text-sm">
               {parsed_rfp.metadata.issue_date && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Issue Date</dt>
-                  <dd className="text-foreground">{parsed_rfp.metadata.issue_date}</dd>
+                  <dd className="font-medium text-foreground">{parsed_rfp.metadata.issue_date}</dd>
                 </div>
               )}
               {parsed_rfp.metadata.due_date && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Due Date</dt>
-                  <dd className="text-foreground">{parsed_rfp.metadata.due_date}</dd>
+                  <dd className="font-medium text-foreground">{parsed_rfp.metadata.due_date}</dd>
                 </div>
               )}
               {parsed_rfp.metadata.estimated_budget && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Budget</dt>
-                  <dd className="text-foreground">{parsed_rfp.metadata.estimated_budget}</dd>
+                  <dd className="font-medium text-foreground">{parsed_rfp.metadata.estimated_budget}</dd>
                 </div>
               )}
               {parsed_rfp.metadata.contact_info && (
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Contact</dt>
-                  <dd className="truncate ml-4 text-foreground">{parsed_rfp.metadata.contact_info}</dd>
+                  <dd className="truncate ml-4 font-medium text-foreground">{parsed_rfp.metadata.contact_info}</dd>
                 </div>
               )}
             </dl>

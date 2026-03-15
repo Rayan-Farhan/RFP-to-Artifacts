@@ -26,7 +26,7 @@ function renderSection(title: string, value: unknown): React.ReactNode {
     return (
       <section>
         <h3 className="mb-2 text-sm font-semibold text-foreground">{title}</h3>
-        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+        <div className="rounded-xl border bg-muted/20 p-4 space-y-3">
           {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
             <div key={k}>{renderSection(k.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()), v)}</div>
           ))}
@@ -48,9 +48,9 @@ export function MarketResearchTab({ data }: { data: MarketResearch | null }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-4">
       {Object.entries(data).map(([key, value]) => (
-        <div key={key} className="rounded-lg border bg-card p-6">
+        <div key={key} className="rounded-xl border bg-card p-6 card-elevated">
           {renderSection(key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()), value)}
         </div>
       ))}

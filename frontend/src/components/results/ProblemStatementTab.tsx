@@ -15,10 +15,10 @@ function renderValue(value: unknown, depth = 0): React.ReactNode {
   }
   if (typeof value === "object") {
     return (
-      <div className={depth > 0 ? "pl-4 border-l-2 border-border space-y-3" : "space-y-4"}>
+      <div className={depth > 0 ? "pl-4 border-l-2 border-border space-y-3" : "space-y-5"}>
         {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
           <div key={k}>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
               {k.replace(/_/g, " ")}
             </h4>
             {renderValue(v, depth + 1)}
@@ -37,7 +37,7 @@ export function ProblemStatementTab({ data }: { data: ProblemStatement | null })
 
   return (
     <div className="mx-auto max-w-3xl">
-      <article className="space-y-6 rounded-lg border bg-card p-8">
+      <article className="space-y-6 rounded-xl border bg-card p-8 card-elevated">
         <h1 className="text-xl font-bold text-foreground">Problem Statement</h1>
         {renderValue(data)}
       </article>

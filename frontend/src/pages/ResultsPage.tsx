@@ -34,10 +34,14 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="container py-12">
+      <div className="container max-w-7xl py-12">
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
+            <div
+              key={i}
+              className="h-24 animate-pulse rounded-xl bg-muted"
+              style={{ animationDelay: `${i * 150}ms` }}
+            />
           ))}
         </div>
       </div>
@@ -47,10 +51,12 @@ export default function ResultsPage() {
   if (error || !artifacts) {
     return (
       <div className="container flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-destructive">Failed to load artifacts. Job may still be processing.</p>
-        <Button variant="outline" onClick={() => navigate(`/job/${jobId}`)}>
-          Back to Pipeline
-        </Button>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+          <p className="text-sm text-destructive">Failed to load artifacts. Job may still be processing.</p>
+          <Button variant="outline" onClick={() => navigate(`/job/${jobId}`)} className="mt-4 rounded-lg">
+            Back to Pipeline
+          </Button>
+        </div>
       </div>
     );
   }
@@ -72,16 +78,21 @@ export default function ResultsPage() {
   ];
 
   return (
-    <div className="container max-w-7xl py-6">
+    <div className="container max-w-7xl py-6 sm:py-8">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Top bar */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/")}
+              className="rounded-full hover:bg-accent"
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Results Dashboard</h1>
+              <h1 className="text-xl font-bold text-foreground sm:text-2xl">Results Dashboard</h1>
               <p className="text-sm text-muted-foreground">Job {jobId?.slice(0, 8)}…</p>
             </div>
           </div>
@@ -89,17 +100,19 @@ export default function ResultsPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="mb-6 flex w-full flex-wrap justify-start gap-1 bg-transparent p-0">
-            {TABS.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab.toLowerCase().replace(/ /g, "-")}
-                className="rounded-md border border-transparent px-3 py-1.5 text-sm data-[state=active]:border-border data-[state=active]:bg-muted"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+            <TabsList className="mb-8 inline-flex w-max gap-1 bg-transparent p-0 sm:flex sm:w-full sm:flex-wrap sm:justify-start">
+              {TABS.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab.toLowerCase().replace(/ /g, "-")}
+                  className="shrink-0 rounded-lg border border-transparent px-3 py-1.5 text-sm transition-colors data-[state=active]:border-primary/30 data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           <TabsContent value="overview">
             <OverviewTab artifacts={artifacts} />

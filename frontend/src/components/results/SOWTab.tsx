@@ -28,28 +28,28 @@ export function SOWTab({ sow }: { sow: StatementOfWork | null }) {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex justify-end">
-        <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-1.5">
+        <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-1.5 rounded-lg">
           {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           {copied ? "Copied" : "Copy to Clipboard"}
         </Button>
       </div>
 
-      <article className="space-y-8 rounded-lg border bg-card p-8">
+      <article className="space-y-8 rounded-xl border bg-card p-8 card-elevated">
         <h1 className="text-2xl font-bold text-foreground">{sow.project_title}</h1>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Executive Summary</h2>
+          <h2 className="mb-2 text-base font-semibold text-foreground">Executive Summary</h2>
           <p className="text-sm text-foreground leading-relaxed">{sow.executive_summary}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">{sow.scope.title}</h2>
+          <h2 className="mb-2 text-base font-semibold text-foreground">{sow.scope.title}</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">{sow.scope.content}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Deliverables</h2>
-          <ol className="list-decimal pl-5 space-y-1 text-sm text-foreground">
+          <h2 className="mb-2 text-base font-semibold text-foreground">Deliverables</h2>
+          <ol className="list-decimal pl-5 space-y-1.5 text-sm text-foreground">
             {sow.deliverables.map((d, i) => (
               <li key={i}>{d}</li>
             ))}
@@ -57,13 +57,13 @@ export function SOWTab({ sow }: { sow: StatementOfWork | null }) {
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">{sow.timeline.title}</h2>
+          <h2 className="mb-2 text-base font-semibold text-foreground">{sow.timeline.title}</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">{sow.timeline.content}</p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Assumptions</h2>
-          <ul className="list-disc pl-5 space-y-1 text-sm text-foreground">
+          <h2 className="mb-2 text-base font-semibold text-foreground">Assumptions</h2>
+          <ul className="list-disc pl-5 space-y-1.5 text-sm text-foreground">
             {sow.assumptions.map((a, i) => (
               <li key={i}>{a}</li>
             ))}
@@ -71,8 +71,8 @@ export function SOWTab({ sow }: { sow: StatementOfWork | null }) {
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Constraints</h2>
-          <ul className="list-disc pl-5 space-y-1 text-sm text-foreground">
+          <h2 className="mb-2 text-base font-semibold text-foreground">Constraints</h2>
+          <ul className="list-disc pl-5 space-y-1.5 text-sm text-foreground">
             {sow.constraints.map((c, i) => (
               <li key={i}>{c}</li>
             ))}
@@ -80,8 +80,8 @@ export function SOWTab({ sow }: { sow: StatementOfWork | null }) {
         </section>
 
         <section>
-          <h2 className="mb-2 text-lg font-semibold text-foreground">Acceptance Criteria</h2>
-          <ol className="list-decimal pl-5 space-y-1 text-sm text-foreground">
+          <h2 className="mb-2 text-base font-semibold text-foreground">Acceptance Criteria</h2>
+          <ol className="list-decimal pl-5 space-y-1.5 text-sm text-foreground">
             {sow.acceptance_criteria.map((a, i) => (
               <li key={i}>{a}</li>
             ))}
@@ -89,9 +89,9 @@ export function SOWTab({ sow }: { sow: StatementOfWork | null }) {
         </section>
 
         {sow.estimated_effort && (
-          <section className="rounded-lg bg-muted p-4">
+          <section className="rounded-xl bg-primary/5 border border-primary/20 p-5">
             <h2 className="mb-1 text-sm font-semibold text-foreground">Estimated Effort</h2>
-            <p className="text-lg font-bold text-primary">{sow.estimated_effort}</p>
+            <p className="text-xl font-bold text-primary">{sow.estimated_effort}</p>
           </section>
         )}
       </article>

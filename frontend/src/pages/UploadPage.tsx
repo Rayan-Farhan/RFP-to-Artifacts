@@ -1,13 +1,19 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, X, Loader2 } from "lucide-react";
+import { Upload, FileText, X, Loader2, Zap, BarChart3, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { uploadRFP } from "@/lib/api";
 import { toast } from "sonner";
 
 const ACCEPTED = [".pdf", ".docx", ".doc", ".txt"];
 const MAX_SIZE = 50 * 1024 * 1024;
+
+const FEATURES = [
+  { icon: Zap, title: "AI-Powered Extraction", description: "Multi-agent pipeline processes your RFP in parallel" },
+  { icon: BarChart3, title: "Complete Artifacts", description: "Requirements, features, personas, roadmap & SOW" },
+  { icon: Shield, title: "Quality Governance", description: "Automated validation ensures thoroughness" },
+];
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -52,29 +58,36 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-2xl text-center"
       >
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+          <Zap className="h-3 w-3" />
+          AI-Powered RFP Analysis
+        </div>
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
           Transform RFPs into
           <br />
-          <span className="text-primary">Product Strategy</span>
+          <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            Product Strategy
+          </span>
         </h1>
-        <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
+        <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
           Upload an enterprise RFP and let our AI agents extract requirements, plan features,
           generate personas, and draft your Statement of Work — in minutes.
         </p>
 
         <motion.div
-          className={`mt-10 rounded-xl border-2 border-dashed p-12 transition-colors ${
+          className={`mt-10 rounded-2xl border-2 border-dashed p-10 transition-all duration-200 sm:p-12 ${
             dragOver
-              ? "border-primary bg-primary/5"
+              ? "border-primary bg-primary/5 shadow-lg"
               : file
-              ? "border-success/50 bg-success/5"
-              : "border-border hover:border-muted-foreground/40"
+              ? "border-success/50 bg-success/5 card-elevated"
+              : "border-border bg-card card-elevated hover:border-muted-foreground/40 hover:shadow-md"
           }`}
           onDragOver={(e) => {
             e.preventDefault();
@@ -82,7 +95,7 @@ export default function UploadPage() {
           }}
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
-          whileHover={{ scale: 1.01 }}
+          whileHover={{ scale: 1.005 }}
           transition={{ duration: 0.15 }}
         >
           <AnimatePresence mode="wait">
@@ -94,16 +107,16 @@ export default function UploadPage() {
                 exit={{ opacity: 0 }}
                 className="flex flex-col items-center gap-4"
               >
-                <div className="rounded-full bg-muted p-4">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
+                <div className="rounded-2xl bg-primary/10 p-4">
+                  <Upload className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-foreground">
+                  <p className="text-lg font-semibold text-foreground">
                     Drag & drop your RFP document
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className="mt-1.5 text-sm text-muted-foreground">
                     or{" "}
-                    <label className="cursor-pointer text-primary hover:underline">
+                    <label className="cursor-pointer font-medium text-primary transition-colors hover:text-primary/80 hover:underline">
                       browse files
                       <input
                         type="file"
@@ -114,7 +127,7 @@ export default function UploadPage() {
                     </label>
                   </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground/80">
                   PDF, DOCX, DOC, TXT • Max 50MB
                 </p>
               </motion.div>
@@ -127,11 +140,11 @@ export default function UploadPage() {
                 className="flex items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-primary/10 p-2">
+                  <div className="rounded-xl bg-primary/10 p-2.5">
                     <FileText className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-foreground">{file.name}</p>
+                    <p className="font-semibold text-foreground">{file.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
@@ -142,6 +155,7 @@ export default function UploadPage() {
                   size="icon"
                   onClick={() => setFile(null)}
                   disabled={uploading}
+                  className="rounded-full hover:bg-destructive/10 hover:text-destructive"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -156,11 +170,16 @@ export default function UploadPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-6"
           >
-            <Button size="lg" onClick={onSubmit} disabled={uploading} className="min-w-[200px]">
+            <Button
+              size="lg"
+              onClick={onSubmit}
+              disabled={uploading}
+              className="min-w-[200px] rounded-xl text-base shadow-md transition-shadow hover:shadow-lg"
+            >
               {uploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Uploading…
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing…
                 </>
               ) : (
                 "Process RFP"
@@ -168,6 +187,27 @@ export default function UploadPage() {
             </Button>
           </motion.div>
         )}
+      </motion.div>
+
+      {/* Feature highlights */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="mt-16 grid w-full max-w-3xl gap-4 sm:grid-cols-3"
+      >
+        {FEATURES.map((feat) => (
+          <div
+            key={feat.title}
+            className="group rounded-xl border bg-card p-5 text-center card-elevated transition-all duration-200 hover:border-primary/30"
+          >
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+              <feat.icon className="h-5 w-5 text-primary" />
+            </div>
+            <h3 className="text-sm font-semibold text-foreground">{feat.title}</h3>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{feat.description}</p>
+          </div>
+        ))}
       </motion.div>
     </div>
   );
