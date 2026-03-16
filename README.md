@@ -19,9 +19,7 @@
 
 ## Demo
 
-https://github.com/user-attachments/assets/demo.mp4
-
-<video src="demo.mp4" controls width="100%"></video>
+https://github.com/user-attachments/assets/98eef933-fffe-4193-896a-d6015c5e3dad
 
 ---
 
